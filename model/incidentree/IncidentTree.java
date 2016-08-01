@@ -12,7 +12,7 @@ import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Log;
 
 public class IncidentTree {
-	IncidentTreeNode root = null;
+	public IncidentTreeNode root = null;
 
 	//@param: query: valid query expression
 	public IncidentTree(String query) {

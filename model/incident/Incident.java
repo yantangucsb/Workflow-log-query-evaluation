@@ -7,9 +7,10 @@ import model.log.Log;
 import optimizer.QueryEngine;
 
 public class Incident {
-	String incidentExpr;
-	IncidentTree tree;
-	List<Occurrence> occs;
+	public String incidentExpr;
+	public IncidentTree tree;
+	public IncidentTree optiTree;
+	public List<Occurrence> occs;
 	
 	enum queryEle{
 		ACTI, LPAREN, RPAREN, LBRACKET, RBRACKET, OP, ATTR
@@ -22,9 +23,10 @@ public class Incident {
 		}
 		incidentExpr = query;
 		tree = new IncidentTree(query);
+		optiTree = null;
 	}
 	
-	//check parentheses, brackets, invalid character
+	//check parentheses, brackets
 	private boolean checkQueryValidity(String query) {
 		if(query == null || query.length() == 0)
 			return false;
@@ -48,8 +50,6 @@ public class Incident {
 				continue;
 			}else if(QueryEngine.queryEngine.isOperator(chs[i])){
 				continue;
-			}else{
-				return false;
 			}
 		}
 		return pcount == 0 && bcount == 0;

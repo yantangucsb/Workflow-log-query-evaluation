@@ -3,11 +3,15 @@ package optimizer;
 import java.util.HashMap;
 
 import model.incident.*;
+import model.incidentree.ActiNode;
+import model.incidentree.IncidentTreeNode;
+import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Log;
 
 public class QueryEngine {
 	public static QueryEngine queryEngine = new QueryEngine();
 	public HashMap<Character, Operator> operators;
+	public Log log;
 	
 	public QueryEngine(){
 		addOperators();
@@ -29,7 +33,17 @@ public class QueryEngine {
 	}
 
 	public void query(Incident incident, Log log) {
-		// TODO Auto-generated method stub
+		if(log == null)
+			return;
+		this.log = log;
+		Thread t = new Thread(incident.tree.root);
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }

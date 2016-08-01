@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.incident.Occurrence;
+
 public class Log {
 	List<LogRecord> records;
 	
@@ -35,5 +37,10 @@ public class Log {
 		    }
 		}
 		
+	}
+
+	public List<Occurrence> filter(String name) {
+		// TODO Auto-generated method stub
+		return new ArrayList<Occurrence>();
 	}
 }

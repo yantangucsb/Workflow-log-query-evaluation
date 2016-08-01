@@ -1,5 +1,9 @@
 package model.incidentree;
 
+import model.incident.Occurrence;
+import model.incident.Operator;
+import optimizer.QueryEngine;
+
 public class ConditionNode extends IncidentTreeNode {
 	String preCon, postCon;
 
@@ -13,6 +17,33 @@ public class ConditionNode extends IncidentTreeNode {
 	public void setConditions(String str1, String str2){
 		preCon = str1;
 		postCon = str2;
+	}
+
+	@Override
+	public void run() {
+		System.err.println("[Debug: query thread] Condition Node " + preCon + " " + postCon);
+		Thread t1 = null;
+		if(left != null){
+			t1 = new Thread(left);
+			t1.start();
+		}
+		
+		try {
+			t1.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for(Occurrence occ: left.occs){
+			if(checkCondition(occ))
+				occs.add(occ);
+		}
+	}
+
+	private boolean checkCondition(Occurrence occ) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }
