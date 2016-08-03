@@ -1,8 +1,8 @@
 package model.incidentree;
 
+import evaluation.QueryEngine;
 import model.incident.Occurrence;
 import model.incident.Operator;
-import optimizer.QueryEngine;
 
 public class ConditionNode extends IncidentTreeNode {
 	String preCon, postCon;

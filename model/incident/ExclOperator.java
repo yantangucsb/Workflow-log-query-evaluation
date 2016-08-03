@@ -10,4 +10,15 @@ public class ExclOperator extends Operator {
 		res.addAll(occs2);
 		return res;
 	}
+
+	@Override
+	public double getCost1(double c1, double c2) {
+		return c1 + c2;
+	}
+
+	@Override
+	public double getCost2(double c1, double c2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

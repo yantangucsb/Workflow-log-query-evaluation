@@ -11,7 +11,7 @@ public abstract class IncidentTreeNode implements Runnable{
 		ACTI, OP, COND
 	};
 	
-	public NodeType type;
+	NodeType type;
 	public String name;
 	public IncidentTreeNode left, right;
 	public List<Occurrence> occs;
@@ -24,7 +24,6 @@ public abstract class IncidentTreeNode implements Runnable{
 	}
 	
 	public NodeType getType() {
-		// TODO Auto-generated method stub
 		return type;
 	}
 }

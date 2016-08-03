@@ -38,15 +38,19 @@ public class ParaOperator extends Operator {
 		while(i<occ1.seq.size() || j<occ2.seq.size()){
 			if(i == occ1.seq.size()){
 				occ.seq.add(occ2.seq.get(j));
+				occ.atts.putAll(occ2.atts);
 				j++;
 			}else if(j == occ2.seq.size()){
 				occ.seq.add(occ1.seq.get(i));
+				occ.atts.putAll(occ1.atts);
 				i++;
 			}else if(occ1.seq.get(i).lsn < occ2.seq.get(j).lsn){
 				occ.seq.add(occ1.seq.get(i));
+				occ.atts.putAll(occ1.atts);
 				i++;
 			}else{
 				occ.seq.add(occ2.seq.get(j));
+				occ.atts.putAll(occ2.atts);
 				j++;
 			}
 		}
@@ -54,6 +58,17 @@ public class ParaOperator extends Operator {
 		occ.setTimeInterval(occ.seq.get(0).islsn, occ.seq.get(occ.seq.size()-1).islsn);
 		
 		return occ;
+	}
+
+	@Override
+	public double getCost1(double c1, double c2) {
+		return Math.min(c1, c2);
+	}
+
+	@Override
+	public double getCost2(double c1, double c2) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

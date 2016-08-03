@@ -1,12 +1,15 @@
 package model.incidentree;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import optimizer.QueryEngine;
+import evaluation.QueryEngine;
 import model.incident.Occurrence;
 import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Log;
@@ -36,7 +39,7 @@ public class IncidentTree {
 				level--;
 			}else if((chs[i] >= 'a' && chs[i] <= 'z') || (chs[i] >= 'A' && chs[i] <= 'Z')){
 				continue;
-			}else if(QueryEngine.queryEngine.isOperator(chs[i])){
+			}else if(QueryEngine.queryEngine.isOperator(chs[i]+"")){
 				if(level == 0){
 					break;
 				}
@@ -134,4 +137,13 @@ public class IncidentTree {
 		return sb.toString();
 	}
 
+	public List<Long> getWids() {
+		if(root == null)
+			return new ArrayList<Long>();
+		Set<Long> hs = new HashSet<Long>();
+		for(Occurrence occ: root.occs){
+			hs.add(occ.wid);
+		}
+		return new ArrayList<Long>(hs);
+	}
 }

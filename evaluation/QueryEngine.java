@@ -1,6 +1,8 @@
-package optimizer;
+package evaluation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import model.incident.*;
 import model.incidentree.ActiNode;
@@ -10,7 +12,7 @@ import model.log.Log;
 
 public class QueryEngine {
 	public static QueryEngine queryEngine = new QueryEngine();
-	public HashMap<Character, Operator> operators;
+	public HashMap<String, Operator> operators;
 	public Log log;
 	
 	public QueryEngine(){
@@ -18,23 +20,23 @@ public class QueryEngine {
 	}
 
 	private void addOperators() {
-		operators = new HashMap<Character, Operator>();
-		operators.put('.', new ConsOperator());
-		operators.put(':', new SequOperator());
-		operators.put('+', new ParaOperator());
-		operators.put('|', new ExclOperator());
+		operators = new HashMap<String, Operator>();
+		operators.put(".", new ConsOperator());
+		operators.put(":", new SequOperator());
+		operators.put("+", new ParaOperator());
+		operators.put("|", new ExclOperator());
 		
 	}
 	
-	public boolean isOperator(char ch){
-		if(operators.containsKey(ch))
+	public boolean isOperator(String string){
+		if(operators.containsKey(string))
 			return true;
 		return false;
 	}
 
-	public void query(Incident incident, Log log) {
+	public List<Long> query(Incident incident, Log log) {
 		if(log == null)
-			return;
+			return new ArrayList<Long>();
 		this.log = log;
 		Thread t = new Thread(incident.tree.root);
 		t.start();
@@ -44,6 +46,6 @@ public class QueryEngine {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return incident.tree.getWids();
 	}
 }

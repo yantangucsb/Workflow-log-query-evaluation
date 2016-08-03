@@ -1,7 +1,7 @@
 package model.incidentree;
 
+import evaluation.QueryEngine;
 import model.incident.Operator;
-import optimizer.QueryEngine;
 
 
 public class OpNode extends IncidentTreeNode{
@@ -31,8 +31,9 @@ public class OpNode extends IncidentTreeNode{
 			e.printStackTrace();
 		}
 		
-		Operator op = QueryEngine.queryEngine.operators.get(name.charAt(0));
+		Operator op = QueryEngine.queryEngine.operators.get(name);
 		occs = op.execute(left.occs, right == null ? null: right.occs);
 		
+		System.err.println("[Debug: query thread] Operator Node " + name + " get occurrences " + occs.size());
 	}
 }

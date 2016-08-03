@@ -2,9 +2,9 @@ package model.incident;
 
 import java.util.List;
 
+import evaluation.QueryEngine;
 import model.incidentree.IncidentTree;
 import model.log.Log;
-import optimizer.QueryEngine;
 
 public class Incident {
 	public String incidentExpr;
@@ -48,7 +48,7 @@ public class Incident {
 				bcount--;
 			}else if((chs[i] >= 'a' && chs[i] <= 'z') || (chs[i] >= 'A' && chs[i] <= 'Z')){
 				continue;
-			}else if(QueryEngine.queryEngine.isOperator(chs[i])){
+			}else if(QueryEngine.queryEngine.isOperator(chs[i]+"")){
 				continue;
 			}
 		}

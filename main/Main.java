@@ -3,9 +3,9 @@ package main;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import evaluation.*;
 import model.incident.*;
 import model.log.*;
-import optimizer.*;
 
 public class Main {
 	enum Type{
@@ -35,7 +35,7 @@ public class Main {
 		Log log = new Log("filename");
 		String query = "a*b";
 		Incident incident = new Incident(query);
-		OptimalTreeGenerator.generateOptimalTree(incident);
+		Optimizer.generateOptimalTree(incident);
 		QueryEngine.queryEngine.query(incident, log);
 	}
 }

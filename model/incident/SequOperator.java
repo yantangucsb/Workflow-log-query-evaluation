@@ -21,7 +21,21 @@ public class SequOperator extends Operator {
 		occ.seq.addAll(occ1.seq);
 		occ.seq.addAll(occ2.seq);
 		occ.setTimeInterval(occ1.start, occ2.end);
+		
+		occ.atts.putAll(occ1.atts);
+		occ.atts.putAll(occ2.atts);
 		return occ;
+	}
+
+	@Override
+	public double getCost1(double c1, double c2) {
+		return Math.min(c1, c2);
+	}
+
+	@Override
+	public double getCost2(double c1, double c2) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
