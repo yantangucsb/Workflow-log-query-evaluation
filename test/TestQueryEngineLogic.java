@@ -36,6 +36,14 @@ public class TestQueryEngineLogic {
 		Incident incident1 = new Incident("UpdateRefer:GetReimburse");
 		List<Long> res1 = QueryEngine.queryEngine.query(incident1, log);
 		System.out.println(res1.toString());
+		
+		Incident incident2 = new Incident("start.GetRefer[balance=2000]");
+		List<Long> res2 = QueryEngine.queryEngine.query(incident2, log);
+		System.out.println(res2.toString());
+		
+		Incident incident3 = new Incident("[balance=1000]GetReimburse[reimburse=1000]");
+		List<Long> res3 = QueryEngine.queryEngine.query(incident3, log);
+		System.out.println(res3.toString());
 	}
 
 }

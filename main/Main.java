@@ -29,6 +29,10 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Type.A);
 		System.out.println(sb.toString());
+		
+		String s = "";
+		String[] ss = s.split(",");
+		System.out.println(ss.length);
 	}
 	
 	public void test(){

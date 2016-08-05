@@ -13,14 +13,14 @@ import model.incident.Occurrence;
 
 public class Log {
 	public List<LogRecord> records;
-	public Map<String, Attribute> actiStat;
-	public Set<Long> wids;
+	public Map<String, Activity> actiStat;
+	public Map<Long, Map<String, String>> snapshots;
 	public long numWorkflow;
 	
 	public Log(String filename){
 		records = new ArrayList<LogRecord>();
-		actiStat = new HashMap<String, Attribute>();
-		wids = new HashSet<Long>();
+		actiStat = new HashMap<String, Activity>();
+		snapshots = new HashMap<Long, Map<String, String>>();
 		numWorkflow = 0;
 		
 		BufferedReader br = null;
@@ -51,19 +51,26 @@ public class Log {
 		
 	}
 
+	//update snapshots and statistics
 	private void updateStatistics(LogRecord record) {
-		if(!wids.contains(record.wid)){
-			wids.add(record.wid);
+		if(!snapshots.containsKey(record.wid)){
+			Map<String, String> atts = new HashMap<String, String>();
+			record.addPreSnapshot(atts);
+			snapshots.put(record.wid, atts);
 			numWorkflow++;
+		}else{
+			Map<String, String> atts = snapshots.get(record.wid);
+			record.addPreSnapshot(atts);
 		}
+		
 		if(!actiStat.containsKey(record.actiName)){
-			Attribute att = new Attribute(record.actiName);
-			att.update(record.wid, record.islsn);
-			actiStat.put(record.actiName, att);
+			Activity acti = new Activity(record.actiName);
+			acti.update(record.wid, record.islsn);
+			actiStat.put(record.actiName, acti);
 			return;
 		}
-		Attribute att = actiStat.get(record.actiName);
-		att.update(record.wid, record.islsn);
+		Activity acti = actiStat.get(record.actiName);
+		acti.update(record.wid, record.islsn);
 		
 	}
 
@@ -80,7 +87,6 @@ public class Log {
 		StringBuilder sb = new StringBuilder();
 		for(LogRecord r: records){
 			sb.append(r);
-			sb.append('\n');
 		}
 		
 		return sb.toString();
@@ -89,6 +95,14 @@ public class Log {
 	public String statInfo(){
 		
 		return actiStat.toString();
+	}
+
+	public String getExtendLog() {
+		StringBuilder sb = new StringBuilder();
+		for(LogRecord r: records){
+			sb.append(r.extendRecord());
+		}
+		return sb.toString();
 	}
 }
 

@@ -22,8 +22,10 @@ public class SequOperator extends Operator {
 		occ.seq.addAll(occ2.seq);
 		occ.setTimeInterval(occ1.start, occ2.end);
 		
-		occ.atts.putAll(occ1.atts);
-		occ.atts.putAll(occ2.atts);
+		//Merge the effects on attributes
+		occ.preMap.putAll(occ1.preMap);
+		occ.postMap.putAll(occ1.postMap);
+		occ.postMap.putAll(occ2.postMap);
 		return occ;
 	}
 

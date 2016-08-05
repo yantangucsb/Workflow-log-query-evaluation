@@ -13,6 +13,7 @@ public class LogRecord {
 	public String actiName;
 	public Map<String, String> attRead;
 	public Map<String, String> attWrite;
+	public Map<String, String> preSnapshot;
 	
 	public LogRecord(String logEntry){
 		attRead = new HashMap<String, String>();
@@ -64,6 +65,39 @@ public class LogRecord {
 		}
 		
 		sb.deleteCharAt(sb.length()-1);
+		sb.append('\n');
 		return sb.toString();
 	}
+	
+	//add the pre/post map
+	public String extendRecord() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Cur snapshot: ");
+		for(Map.Entry<String, String> pair: this.preSnapshot.entrySet()){
+			sb.append(pair.getKey());
+			sb.append('=');
+			sb.append(pair.getValue());
+			sb.append(' ');
+		}
+		sb.append('\n');
+		sb.append(this.toString());
+		return sb.toString();
+	}
+
+	//add the snapshot of attribute value pairs
+	//for preCondition matching
+	//Update the current snapshot
+	public void addPreSnapshot(Map<String, String> atts) {
+		preSnapshot = new HashMap<String, String>(atts);
+		updatePostSnapshot(atts);
+		
+	}
+
+	public void updatePostSnapshot(Map<String, String> atts) {
+		for(Map.Entry<String, String> pair: attWrite.entrySet()){
+			atts.put(pair.getKey(), pair.getValue());
+		}
+		
+	}
+	
 }

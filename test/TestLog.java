@@ -17,5 +17,10 @@ public class TestLog {
 	public void testStat(){
 		System.out.println(log.statInfo());
 	}
+	
+	@Test
+	public void testExtendLog(){
+		System.out.println(log.getExtendLog());
+	}
 
 }

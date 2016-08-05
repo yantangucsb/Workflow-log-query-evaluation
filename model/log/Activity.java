@@ -3,7 +3,7 @@ package model.log;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Attribute{
+public class Activity{
 	public String name;
 	public Map<Long, Long> wids;
 	public long aveStart;
@@ -11,8 +11,9 @@ public class Attribute{
 	public long aveInterval;
 	public long numInterval;
 	public long count;
+	public String preValue;
 	
-	public Attribute(String name){
+	public Activity(String name){
 		this.name = name;
 		wids = new HashMap<Long, Long>();
 		aveStart = 0;

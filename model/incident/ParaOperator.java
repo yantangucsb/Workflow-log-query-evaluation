@@ -1,8 +1,10 @@
 package model.incident;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import model.log.LogRecord;
 
@@ -35,28 +37,33 @@ public class ParaOperator extends Operator {
 	private Occurrence merge(Occurrence occ1, Occurrence occ2) {
 		Occurrence occ = new Occurrence(occ1.wid);
 		int i=0, j=0;
-		while(i<occ1.seq.size() || j<occ2.seq.size()){
-			if(i == occ1.seq.size()){
-				occ.seq.add(occ2.seq.get(j));
-				occ.atts.putAll(occ2.atts);
+		while(i<occ1.size() || j<occ2.size()){
+			if(i == occ1.size()){
+				occ.add(occ2.get(j));
 				j++;
-			}else if(j == occ2.seq.size()){
-				occ.seq.add(occ1.seq.get(i));
-				occ.atts.putAll(occ1.atts);
+			}else if(j == occ2.size()){
+				occ.add(occ1.get(i));
 				i++;
-			}else if(occ1.seq.get(i).lsn < occ2.seq.get(j).lsn){
-				occ.seq.add(occ1.seq.get(i));
-				occ.atts.putAll(occ1.atts);
+			}else if(occ1.get(i).lsn < occ2.get(j).lsn){
+				occ.add(occ1.get(i));
 				i++;
 			}else{
-				occ.seq.add(occ2.seq.get(j));
-				occ.atts.putAll(occ2.atts);
+				occ.add(occ2.get(j));
 				j++;
 			}
 		}
 		
-		occ.setTimeInterval(occ.seq.get(0).islsn, occ.seq.get(occ.seq.size()-1).islsn);
-		
+		//set the pre post map
+		//preMap is the preSnapshot for the first log record
+		//postMap is calculated from the preSnapshot for the last log record
+		if(occ.size() != 0){
+			occ.setTimeInterval(occ.get(0).islsn, occ.get(occ.size()-1).islsn);
+			occ.setPreMap(occ.get(0).preSnapshot);
+			LogRecord last = occ.get(occ.size()-1);
+			Map<String, String> tmp = new HashMap<String, String>(last.preSnapshot);
+			last.updatePostSnapshot(tmp);
+			occ.setPostMap(tmp);
+		}
 		return occ;
 	}
 

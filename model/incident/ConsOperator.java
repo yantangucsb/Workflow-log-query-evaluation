@@ -23,8 +23,9 @@ public class ConsOperator extends Operator {
 		occ.setTimeInterval(occ1.start, occ2.end);
 		
 		//Merge the effects on attributes
-		occ.atts.putAll(occ1.atts);
-		occ.atts.putAll(occ2.atts);
+		occ.preMap.putAll(occ1.preMap);
+		occ.postMap.putAll(occ1.postMap);
+		occ.postMap.putAll(occ2.postMap);
 		return occ;
 	}
 

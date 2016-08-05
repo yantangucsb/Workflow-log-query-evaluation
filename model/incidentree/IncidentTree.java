@@ -85,8 +85,7 @@ public class IncidentTree {
 				return cur;
 			}else{
 				cur = new ConditionNode("[condition]");
-				((ConditionNode)cur).preCon = leftCond;
-				((ConditionNode)cur).postCon = rightCond;
+				((ConditionNode)cur).setConditions(leftCond, rightCond);
 //				System.out.println("[debug]: " + curStr);
 				cur.left = buildTree(curStr);
 				return cur;
