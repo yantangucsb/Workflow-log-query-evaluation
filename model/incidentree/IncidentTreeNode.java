@@ -1,12 +1,18 @@
 package model.incidentree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.incident.Occurrence;
 import model.log.Log;
 
-public abstract class IncidentTreeNode implements Runnable{
+public abstract class IncidentTreeNode implements Runnable, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum NodeType {
 		ACTI, OP, COND
 	};

@@ -1,5 +1,6 @@
 package model.incidentree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,7 +15,12 @@ import model.incident.Occurrence;
 import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Log;
 
-public class IncidentTree {
+public class IncidentTree implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public IncidentTreeNode root = null;
 
 	//@param: query: valid query expression

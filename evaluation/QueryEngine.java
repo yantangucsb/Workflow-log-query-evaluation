@@ -2,6 +2,7 @@ package evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import model.incident.*;
@@ -13,6 +14,7 @@ import model.log.Log;
 public class QueryEngine {
 	public static QueryEngine queryEngine = new QueryEngine();
 	public HashMap<String, Operator> operators;
+	public HashSet<OperatorRule> rules;
 	public Log log;
 	
 	public QueryEngine(){

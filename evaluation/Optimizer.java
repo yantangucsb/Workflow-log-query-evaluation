@@ -1,13 +1,21 @@
 package evaluation;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import org.apache.commons.lang3.SerializationUtils;
+
 import model.incident.Incident;
-import model.incidentree.IncidentTree;
-import model.incidentree.IncidentTreeNode;
+import model.incidentree.*;
 import model.incidentree.IncidentTreeNode.NodeType;
 
 public class Optimizer {
 
 	public static void generateOptimalTree(Incident incident) {
+		double minCost = Double.MAX_VALUE;
+		incident.optiTree = incident.tree;
+		IncidentTree curTree = SerializationUtils.clone(incident.tree);
+		Queue<IncidentTree> frontier = new LinkedList<IncidentTree>();
 		
 	}
 	
