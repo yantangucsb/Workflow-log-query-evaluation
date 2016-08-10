@@ -19,6 +19,15 @@ public class QueryEngine {
 	
 	public QueryEngine(){
 		addOperators();
+		addRules();
+	}
+
+	private void addRules() {
+		rules = new HashSet<OperatorRule>();
+		rules.add(new AssociativeRule());
+		rules.add(new ConditionRule());
+		rules.add(new DistributiveRule());
+		rules.add(new CommutativeRule());
 	}
 
 	private void addOperators() {

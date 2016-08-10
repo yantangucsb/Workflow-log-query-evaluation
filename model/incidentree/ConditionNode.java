@@ -8,8 +8,8 @@ import model.incident.Occurrence;
 import model.incident.Operator;
 
 public class ConditionNode extends IncidentTreeNode {
-	String preCon, postCon;
-	Map<String, String> preMap, postMap;
+	public String preCon, postCon;
+	public Map<String, String> preMap, postMap;
 
 	public ConditionNode(String str) {
 		super(str);

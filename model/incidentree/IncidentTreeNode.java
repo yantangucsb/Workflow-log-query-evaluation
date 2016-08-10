@@ -17,7 +17,7 @@ public abstract class IncidentTreeNode implements Runnable, Serializable{
 		ACTI, OP, COND
 	};
 	
-	NodeType type;
+	public NodeType type;
 	public String name;
 	public IncidentTreeNode left, right;
 	public List<Occurrence> occs;
