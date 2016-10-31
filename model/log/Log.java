@@ -17,21 +17,42 @@ public class Log {
 	public Map<Long, Map<String, String>> snapshots;
 	public long numWorkflow;
 	
+	public Log(){
+		init();
+	}
+	
 	public Log(String filename){
+		init();
+		loadFile(filename);
+	}
+	
+	private void init() {
 		records = new ArrayList<LogRecord>();
 		actiStat = new HashMap<String, Activity>();
 		snapshots = new HashMap<Long, Map<String, String>>();
 		numWorkflow = 0;
-		
+	}
+	
+	public void loadFile(String filename){
 		BufferedReader br = null;
 	    try {
 	    	br = new BufferedReader(new FileReader(filename));
 	        String line = br.readLine();
+	        int count = 0;
 	        while (line != null) {
+	        	if(line.length() == 0){
+	        		line = br.readLine();
+	        		continue;
+	        	}
 	        	LogRecord record = new LogRecord(line);
 	        	records.add(record);
 	        	updateStatistics(record);
+	        	count++;
+	        	if(count%10000 == 0){
+	        		System.out.println(count + " lines processed.");
+	        	}
 	            line = br.readLine();
+//	            System.out.println(record.toString());
 	        }
 	        
 	    }catch(Exception e){
@@ -48,7 +69,6 @@ public class Log {
 		    {
 		    }
 		}
-		
 	}
 
 	//update snapshots and statistics
@@ -103,6 +123,16 @@ public class Log {
 			sb.append(r.extendRecord());
 		}
 		return sb.toString();
+	}
+	
+	public List<LogRecord> getInstance(int wid){
+		List<LogRecord> res = new ArrayList<LogRecord>();
+		for(LogRecord lr: records){
+			if(lr.wid == wid){
+				res.add(lr);
+			}
+		}
+		return res;
 	}
 }
 

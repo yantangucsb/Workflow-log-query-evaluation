@@ -151,4 +151,11 @@ public class IncidentTree implements Serializable{
 		}
 		return new ArrayList<Long>(hs);
 	}
+
+	public List<Occurrence> getOcc() {
+		if(root == null)
+			return new ArrayList<Occurrence>();
+		
+		return new ArrayList<Occurrence>(root.occs);
+	}
 }

@@ -59,4 +59,19 @@ public class QueryEngine {
 		}
 		return incident.tree.getWids();
 	}
+	
+	public List<Occurrence> queryOcc(Incident incident, Log log) {
+		if(log == null)
+			return new ArrayList<Occurrence>();
+		this.log = log;
+		Thread t = new Thread(incident.tree.root);
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return incident.tree.getOcc();
+	}
 }

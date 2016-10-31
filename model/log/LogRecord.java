@@ -20,11 +20,16 @@ public class LogRecord {
 		attWrite = new HashMap<String, String>();
 		
 		String[] parts = logEntry.split(" ");
+
 		lsn = Long.parseLong(parts[0]);
 		wid = Long.parseLong(parts[1]);
 		islsn = Long.parseLong(parts[2]);
 		actiName = parts[3];
 		int i = 4;
+		
+		//timestamp, currently no use
+		String time = parts[i++] + " " + parts[i++];
+		
 		while(i < parts.length && !parts[i].equals("#")){
 			String[] pair = parts[i].split("=");
 			attRead.put(pair[0], pair[1]);
@@ -32,7 +37,11 @@ public class LogRecord {
 		}
 		i++;
 		while(i < parts.length){
-//			System.out.println(parts[i]);
+			if(parts[i].length() <= 1){
+				i++;
+				continue;
+			}
+//			System.out.println("att = val: " + parts[i]);
 			String[] pair = parts[i].split("=");
 //			System.out.println(pair.length);
 			attWrite.put(pair[0], pair[1]);

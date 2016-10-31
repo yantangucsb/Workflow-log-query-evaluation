@@ -62,4 +62,15 @@ public class Occurrence {
 	public void setPostMap(Map<String, String> postSnapshot) {
 		postMap.putAll(postSnapshot);
 	}
+	
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		for(LogRecord lr: seq){
+			sb.append(lr.lsn);
+			sb.append(' ');
+		}
+		sb.append(']');
+		return sb.toString();
+	}
 }

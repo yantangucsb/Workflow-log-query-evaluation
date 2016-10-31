@@ -73,6 +73,8 @@ public class ConditionNode extends IncidentTreeNode {
 			if(!occ.postMap.containsKey(pair.getKey()) || !occ.postMap.get(pair.getKey()).equals(pair.getValue())){
 				return false;
 			}
+//			if(occ.preMap.containsKey(pair.getKey()) && occ.preMap.get(pair.getKey()) == pair.getValue())
+//				return false;
 		}
 		return true;
 	}
