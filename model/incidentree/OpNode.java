@@ -13,7 +13,7 @@ public class OpNode extends IncidentTreeNode{
 
 	@Override
 	public void run() {
-		System.err.println("[Debug: query thread] Operator Node " + name);
+//		System.err.println("[Debug: query thread] Operator Node " + name);
 		Thread t1 = null, t2 = null;
 		if(left != null){
 			t1 = new Thread(left);
@@ -34,6 +34,6 @@ public class OpNode extends IncidentTreeNode{
 		Operator op = QueryEngine.queryEngine.operators.get(name);
 		occs = op.execute(left.occs, right == null ? null: right.occs);
 		
-		System.err.println("[Debug: query thread] Operator Node " + name + " get occurrences " + occs.size());
+//		System.err.println("[Debug: query thread] Operator Node " + name + " get occurrences " + occs.size());
 	}
 }

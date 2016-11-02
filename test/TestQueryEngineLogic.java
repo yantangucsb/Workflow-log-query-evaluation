@@ -53,7 +53,8 @@ public class TestQueryEngineLogic {
 	public void testTraumaData(){
 		String q1 = "ICU[los=1]";
 		String q2 = "MAINDATA[admdate=20070104]";
-		Incident incident = new Incident(q1);
+		String q3 = "ICU:INJDETS";
+		Incident incident = new Incident(q2);
 		List<Long> res = QueryEngine.queryEngine.query(incident, log);
 		Collections.sort(res);
 		System.out.println(res.toString());

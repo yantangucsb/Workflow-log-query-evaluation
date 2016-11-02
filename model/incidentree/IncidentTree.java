@@ -146,8 +146,8 @@ public class IncidentTree implements Serializable{
 		if(root == null)
 			return new ArrayList<Long>();
 		Set<Long> hs = new HashSet<Long>();
-		for(Occurrence occ: root.occs){
-			hs.add(occ.wid);
+		for(long key: root.occs.keySet()){
+			hs.add(key);
 		}
 		return new ArrayList<Long>(hs);
 	}
@@ -156,6 +156,10 @@ public class IncidentTree implements Serializable{
 		if(root == null)
 			return new ArrayList<Occurrence>();
 		
-		return new ArrayList<Occurrence>(root.occs);
+		List<Occurrence> res = new ArrayList<Occurrence>();
+		for(List<Occurrence> li: root.occs.values()){
+			res.addAll(li);
+		}
+		return res;
 	}
 }

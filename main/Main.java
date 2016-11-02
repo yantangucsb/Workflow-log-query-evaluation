@@ -14,10 +14,11 @@ public class Main {
 
 	public static void main(String[] args){
 		Log log = new Log();
-		log.loadFile("data/output_07.txt");
-//		testRecord(log);
-//		testRecordWithCond(log);
-//		testConsOp(log);
+//		log.loadFile("data/output_07.txt");
+		log.loadFile("data/output_08.txt");
+		testRecord(log);
+		testRecordWithCond(log);
+		testConsOp(log);
 		testSeqOp(log);
 		testOrOp(log);
 		testParaOp(log);
@@ -36,34 +37,39 @@ public class Main {
 				"HEMO", "INJDETS", "GENMECH", "NARRATIV"};
 		test(log, qs);
 	}
+	
+	/*
+	 * Notes:
+	 * large test case: "EMERG.RADIOLOG" with # of records 37927 and 32669 resp.
+	 */
 	public static void testConsOp(Log log){
 		System.out.println("Start testing cons op:");
-		String[] qs = {"ICU.INJDETS", "TRANSFER.MAINDATA", "EMERG.RADIOLOG", "PRECONDS.HOSPREV",
-				"MTOS.QAISSUE", "INJDETS.PROTECT", "FLDDETAI.INJDETS", "VITALS.EMERG",
+		String[] qs = {"ICU.INJDETS", "TRANSFER.TRA", "ICU.HOSPREV", "PRECONDS.HOSPREV",
+				"MTOS.QAISSUE", "INJDETS.PROTECT", "FLDDETAI.INJDETS", "VITALS.FLDDETAI",
 				"TREATMEN.LAB", "MORTDETS.ORGANS"};
 		test(log, qs);
 	}
 	
 	public static void testSeqOp(Log log){
 		System.out.println("Start testing sequ op:");
-		String[] qs = {"ICU:INJDETS", "TRANSFER:MAINDATA", "EMERG:RADIOLOG", "PRECONDS:HOSPREV",
-				"MTOS:QAISSUE", "INJDETS:PROTECT", "FLDDETAI:INJDETS", "VITALS:EMERG",
+		String[] qs = {"ICU:INJDETS", "TRANSFER:TRA", "ICU:HOSPREV", "PRECONDS:HOSPREV",
+				"MTOS:QAISSUE", "INJDETS:PROTECT", "FLDDETAI:INJDETS", "VITALS:FLDDETAI",
 				"TREATMEN:LAB", "MORTDETS:ORGANS"};
 		test(log, qs);
 	}
 	
 	public static void testOrOp(Log log){
 		System.out.println("Start testing or op:");
-		String[] qs = {"ICU|INJDETS", "TRANSFER|MAINDATA", "EMERG|RADIOLOG", "PRECONDS|HOSPREV",
-				"MTOS|QAISSUE", "INJDETS|PROTECT", "FLDDETAI|INJDETS", "VITALS|EMERG",
+		String[] qs = {"ICU|INJDETS", "TRANSFER|TRA", "ICU|HOSPREV", "PRECONDS|HOSPREV",
+				"MTOS|QAISSUE", "INJDETS|PROTECT", "FLDDETAI|INJDETS", "VITALS|FLDDETAI",
 				"TREATMEN|LAB", "MORTDETS|ORGANS"};
 		test(log, qs);
 	}
 	
 	public static void testParaOp(Log log){
 		System.out.println("Start testing para op:");
-		String[] qs = {"ICU+INJDETS", "TRANSFER+MAINDATA", "EMERG+RADIOLOG", "PRECONDS+HOSPREV",
-				"MTOS+QAISSUE", "INJDETS+PROTECT", "FLDDETAI+INJDETS", "VITALS+EMERG",
+		String[] qs = {"ICU+INJDETS", "TRANSFER+TRA", "ICU+HOSPREV", "PRECONDS+HOSPREV",
+				"MTOS+QAISSUE", "INJDETS+PROTECT", "FLDDETAI+INJDETS", "VITALS+FLDDETAI",
 				"TREATMEN+LAB", "MORTDETS+ORGANS"};
 		test(log, qs);
 	}

@@ -15,9 +15,9 @@ public class ActiNode extends IncidentTreeNode {
 
 	@Override
 	public void run() {
-		System.err.println("[Debug: query thread] Acti Node " + name);
+//		System.err.println("[Debug: query thread] Acti Node " + name);
 		this.occs = QueryEngine.queryEngine.log.filter(name);
-		System.err.println("[Debug: query thread] Acti Node " + name + " get occurrences " + occs.size());
+//		System.err.println("[Debug: query thread] Acti Node " + name + " get occurrences " + occs.size());
 	}
 	
 }

@@ -48,7 +48,7 @@ public class Log {
 	        	records.add(record);
 	        	updateStatistics(record);
 	        	count++;
-	        	if(count%10000 == 0){
+	        	if(count%100000 == 0){
 	        		System.out.println(count + " lines processed.");
 	        	}
 	            line = br.readLine();
@@ -94,11 +94,15 @@ public class Log {
 		
 	}
 
-	public List<Occurrence> filter(String name) {
-		List<Occurrence> res = new ArrayList<Occurrence>();
+	public Map<Long, List<Occurrence>> filter(String name) {
+		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
 		for(LogRecord r: records){
-			if(r.actiName.equals(name))
-				res.add(new Occurrence(r));
+			if(r.actiName.equals(name)){
+				if(!res.containsKey(r.wid)){
+					res.put(r.wid, new ArrayList<Occurrence>());
+				}
+				res.get(r.wid).add(new Occurrence(r));
+			}
 		}
 		return res;
 	}

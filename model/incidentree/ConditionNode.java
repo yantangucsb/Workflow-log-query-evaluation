@@ -1,7 +1,6 @@
 package model.incidentree;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import evaluation.QueryEngine;
 import model.incident.Occurrence;
@@ -41,7 +40,7 @@ public class ConditionNode extends IncidentTreeNode {
 
 	@Override
 	public void run() {
-		System.err.println("[Debug: query thread] Condition Node " + preCon + " " + postCon);
+//		System.err.println("[Debug: query thread] Condition Node " + preCon + " " + postCon);
 		Thread t1 = null;
 		if(left != null){
 			t1 = new Thread(left);
@@ -55,9 +54,17 @@ public class ConditionNode extends IncidentTreeNode {
 			e.printStackTrace();
 		}
 		
-		for(Occurrence occ: left.occs){
-			if(checkCondition(occ))
-				occs.add(occ);
+		for(long key: left.occs.keySet()){
+			List<Occurrence> li = left.occs.get(key);
+			for(Occurrence occ: li){
+				if(checkCondition(occ)){
+					if(!occs.containsKey(occ.wid)){
+						occs.put(key, new ArrayList<Occurrence>());
+					}
+					occs.get(key).add(occ);
+				}
+			}
+		
 		}
 	}
 

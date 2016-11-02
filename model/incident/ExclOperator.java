@@ -1,13 +1,19 @@
 package model.incident;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExclOperator extends Operator {
-	public List<Occurrence> execute(List<Occurrence> occs1, List<Occurrence> occs2){
-		List<Occurrence> res = new ArrayList<Occurrence>();
-		res.addAll(occs1);
-		res.addAll(occs2);
+	public Map<Long, List<Occurrence>> execute(Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
+		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>(occs1);
+		for(long key: occs2.keySet()){
+			if(!res.containsKey(key)){
+				res.put(key, new ArrayList<Occurrence>());
+			}
+			res.get(key).addAll(occs2.get(key));
+		}
 		return res;
 	}
 

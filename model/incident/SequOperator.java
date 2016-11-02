@@ -1,15 +1,28 @@
 package model.incident;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SequOperator extends Operator {
-	public List<Occurrence> execute(List<Occurrence> occs1, List<Occurrence> occs2){
-		List<Occurrence> res = new ArrayList<Occurrence>();
-		for(Occurrence occ1: occs1){
-			for(Occurrence occ2: occs2){
-				if(occ1.end < occ2.start){
-					res.add(merge(occ1, occ2));
+	public  Map<Long, List<Occurrence>> execute(
+			Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
+		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+		
+		for(long key: occs1.keySet()){
+			if(!occs2.containsKey(key))
+				continue;
+			List<Occurrence> li1 = occs1.get(key);
+			List<Occurrence> li2 = occs2.get(key);
+			for(Occurrence occ1: li1){
+				for(Occurrence occ2: li2){
+					if(occ1.end < occ2.start){
+						if(!res.containsKey(key)){
+							res.put(key, new ArrayList<Occurrence>());
+						}
+						res.get(key).add(merge(occ1, occ2));
+					}
 				}
 			}
 		}
