@@ -1,9 +1,7 @@
 package evaluation;
 
-import model.incidentree.IncidentTree;
-import model.incidentree.IncidentTreeNode;
+import model.incidentree.*;
 import model.incidentree.IncidentTreeNode.NodeType;
-import model.incidentree.OpNode;
 
 public class DistributiveRule extends OperatorRule {
 	//if reverse if true, then its (a.b)|(a.d) => a.(b|d)
@@ -13,6 +11,7 @@ public class DistributiveRule extends OperatorRule {
 	public boolean checkQualified(IncidentTreeNode cur) {
 		if(cur.type != NodeType.OP)
 			return false;
+		//case: (a op b)|(a op c) || (b op a)|(c op a)
 		if(cur.name.equals("|")){
 			if(cur.left == null || cur.right == null)
 				return false;
@@ -22,6 +21,8 @@ public class DistributiveRule extends OperatorRule {
 				return false;
 			if(cur.left.left == null || cur.left.right == null || cur.right.left == null || cur.right.right == null)
 				return false;
+			//this is for the case that op is cons or sequ
+			//todo: take care of +
 			if(!isSameTree(cur.left.left, cur.right.left) && !isSameTree(cur.left.right, cur.right.right))
 				return false;
 			reverse = true;
@@ -68,10 +69,12 @@ public class DistributiveRule extends OperatorRule {
 				node.left = newRoot.right;
 				node.right = node.right.right;
 				newRoot.right = node;
-			}else{
+			}else if(isSameTree(cur.left.right, cur.right.right)){
 				node.left = newRoot.left;
 				node.right = node.right.left;
 				newRoot.left = node;
+			}else{
+				//don't apply the rule
 			}
 		}else{
 			if(node.left.type == NodeType.OP && node.left.name.equals("|")){
@@ -79,7 +82,7 @@ public class DistributiveRule extends OperatorRule {
 				node.left = newRoot.left;
 				OpNode tmp = new OpNode(node.name);
 				tmp.left = newRoot.right;
-				tmp.right = node.right;
+				tmp.right = copySubTree(node.right);
 				newRoot.left = node;
 				newRoot.right = tmp;
 			}else{
@@ -87,7 +90,9 @@ public class DistributiveRule extends OperatorRule {
 				node.right = newRoot.left;
 				OpNode tmp = new OpNode(node.name);
 				tmp.right = newRoot.right;
-				tmp.left = node.left;
+				//didn't copy it out
+				//This caused a problem when do writes
+				tmp.left = copySubTree(node.left);
 				newRoot.left = node;
 				newRoot.right = tmp;
 			}
@@ -99,6 +104,16 @@ public class DistributiveRule extends OperatorRule {
 			parent.left = newRoot;
 		}else{
 			parent.right = newRoot;
+		}
+	}
+
+	private IncidentTreeNode copySubTree(IncidentTreeNode root) {
+		if(root.type == NodeType.ACTI){
+			return new ActiNode(root);
+		}else if(root.type == NodeType.COND){
+			return new ConditionNode(root);
+		}else{
+			return new OpNode(root);
 		}
 	}
 

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import evaluation.CostModel;
+import model.log.Activity;
+
 public class ExclOperator extends Operator {
 	public Map<Long, List<Occurrence>> execute(Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
 		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>(occs1);
@@ -18,13 +21,17 @@ public class ExclOperator extends Operator {
 	}
 
 	@Override
-	public double getCost1(double c1, double c2) {
+	public long getResultSize1(long c1, long c2) {
 		return c1 + c2;
 	}
 
 	@Override
-	public double getCost2(double c1, double c2) {
-		// TODO Auto-generated method stub
-		return 0;
+	public CostModel getResultSize2(CostModel a1, CostModel a2) {
+		CostModel cur = new CostModel(a1.name);
+		cur.aveStart = Math.min(a1.aveStart, a2.aveStart);
+		cur.aveInterval = Math.max(Math.min(a1.aveInterval, a2.aveInterval)/2, 1);
+		cur.count = a1.count + a2.count;
+		cur.numStart = Math.max(a1.numStart, a2.numStart);
+		return cur;
 	}
 }

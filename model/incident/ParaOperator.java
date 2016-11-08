@@ -6,11 +6,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import evaluation.CostModel;
+import evaluation.QueryEngine;
+import model.log.Activity;
 import model.log.LogRecord;
 
 public class ParaOperator extends Operator {
 	public Map<Long, List<Occurrence>> execute(Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
 		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+		
+		if(occs1.size() == 0 || occs2.size() == 0){
+			return res;
+		}
 		
 		for(long key: occs1.keySet()){
 			if(!occs2.containsKey(key))
@@ -45,6 +52,11 @@ public class ParaOperator extends Operator {
 		return false;
 	}
 
+	
+	/*
+	 * Tradeoff: Do we need to sort the records currently?
+	 * current version of merge
+	 */
 	private Occurrence merge(Occurrence occ1, Occurrence occ2) {
 		Occurrence occ = new Occurrence(occ1.wid);
 		int i=0, j=0;
@@ -71,22 +83,36 @@ public class ParaOperator extends Operator {
 			occ.setTimeInterval(occ.get(0).islsn, occ.get(occ.size()-1).islsn);
 			occ.setPreMap(occ.get(0).preSnapshot);
 			LogRecord last = occ.get(occ.size()-1);
-			Map<String, String> tmp = new HashMap<String, String>(last.preSnapshot);
-			last.updatePostSnapshot(tmp);
-			occ.setPostMap(tmp);
+//			Map<String, String> tmp = new HashMap<String, String>(last.preSnapshot);
+//			last.updatePostSnapshot(tmp);
+			
+			if(last.lsn >= QueryEngine.queryEngine.log.records.size()){
+				occ.setPostMap(QueryEngine.queryEngine.log.snapshots.get(last.wid));
+			}else{
+				LogRecord afterLast = QueryEngine.queryEngine.log.records.get((int) (last.lsn));
+				occ.setPostMap(afterLast.preSnapshot);
+			}
 		}
 		return occ;
 	}
 
 	@Override
-	public double getCost1(double c1, double c2) {
+	public long getResultSize1(long c1, long c2) {
 		return Math.min(c1, c2);
 	}
 
 	@Override
-	public double getCost2(double c1, double c2) {
-		// TODO Auto-generated method stub
-		return 0;
+	public CostModel getResultSize2(CostModel a1, CostModel a2) {
+		if(a1.count == 0 || a2.count == 0 || a1.numStart == 0 || a2.numStart == 0){
+			return new CostModel(a1.name);
+		}
+		
+		CostModel cur = new CostModel(a1.name);
+		cur.aveStart = Math.min(a1.aveStart, a2.aveStart);
+		cur.aveInterval = Math.max(Math.min(a1.aveInterval, a2.aveInterval)/2, 1);
+		cur.count = a1.count * a2.count * Math.min(a2.numStart, a1.numStart);
+		cur.numStart = Math.max(a1.numStart, a2.numStart);
+		return cur;
 	}
 
 }

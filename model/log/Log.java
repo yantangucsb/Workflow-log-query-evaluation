@@ -33,6 +33,10 @@ public class Log {
 		numWorkflow = 0;
 	}
 	
+	public int size(){
+		return records.size();
+	}
+	
 	public void loadFile(String filename){
 		BufferedReader br = null;
 	    try {
@@ -45,6 +49,10 @@ public class Log {
 	        		continue;
 	        	}
 	        	LogRecord record = new LogRecord(line);
+//	        	if(record.lsn != count + 1){
+//	        		System.err.println("Oops! LSN " + record.lsn + " is not correct!");
+//	        		break;
+//	        	}
 	        	records.add(record);
 	        	updateStatistics(record);
 	        	count++;
@@ -54,7 +62,7 @@ public class Log {
 	            line = br.readLine();
 //	            System.out.println(record.toString());
 	        }
-	        
+	        System.out.println("# of Lines processed: " + count);
 	    }catch(Exception e){
 	    	System.out.println("load log file failed! ");
 	    	e.printStackTrace();

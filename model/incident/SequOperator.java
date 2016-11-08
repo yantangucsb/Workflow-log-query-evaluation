@@ -5,10 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import evaluation.CostModel;
+import model.log.Activity;
+
 public class SequOperator extends Operator {
 	public  Map<Long, List<Occurrence>> execute(
 			Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
 		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+		
+		if(occs1.size() == 0 || occs2.size() == 0){
+			return res;
+		}
 		
 		for(long key: occs1.keySet()){
 			if(!occs2.containsKey(key))
@@ -36,21 +43,36 @@ public class SequOperator extends Operator {
 		occ.setTimeInterval(occ1.start, occ2.end);
 		
 		//Merge the effects on attributes
-		occ.preMap.putAll(occ1.preMap);
-		occ.postMap.putAll(occ1.postMap);
-		occ.postMap.putAll(occ2.postMap);
+//		occ.preMap.putAll(occ1.preMap);
+//		occ.postMap.putAll(occ1.postMap);
+//		occ.postMap.putAll(occ2.postMap);
+		
+		occ.setPreMap(occ1.preMap);
+		occ.setPostMap(occ2.postMap);
 		return occ;
 	}
 
 	@Override
-	public double getCost1(double c1, double c2) {
+	public long getResultSize1(long c1, long c2) {
 		return Math.min(c1, c2);
 	}
 
 	@Override
-	public double getCost2(double c1, double c2) {
-		// TODO Auto-generated method stub
-		return 0;
+	public CostModel getResultSize2(CostModel a1, CostModel a2) {
+		if(a1.count == 0 || a2.count == 0 || a1.numStart == 0 || a2.numStart == 0){
+			return new CostModel(a1.name);
+		}
+		
+		long ts1 = a1.aveStart, td1 = a1.aveInterval;
+		long ts2 = a2.aveStart, td2 = a2.aveInterval;
+		CostModel cur = new CostModel(a1.name);
+		cur.aveStart = Math.min(a1.aveStart, a2.aveStart);
+		cur.aveInterval = a1.aveInterval;
+		long lastIndex = (a2.count*td2/a2.numStart + ts2 - ts1)/td1;
+		long countPerInst = a2.count*lastIndex/a2.numStart - (ts1 - ts2)*lastIndex/td2 - td1*lastIndex*(lastIndex+1)/2/td2;
+		cur.count = countPerInst * a1.numStart;
+		cur.numStart = a1.numStart;
+		return cur;
 	}
 
 }

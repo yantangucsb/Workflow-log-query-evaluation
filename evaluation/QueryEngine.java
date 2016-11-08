@@ -27,7 +27,7 @@ public class QueryEngine {
 		rules.add(new AssociativeRule());
 		rules.add(new ConditionRule());
 		rules.add(new DistributiveRule());
-		rules.add(new CommutativeRule());
+//		rules.add(new CommutativeRule());
 	}
 
 	private void addOperators() {
@@ -45,9 +45,11 @@ public class QueryEngine {
 		return false;
 	}
 
-	public List<Long> query(Incident incident, Log log) {
-		if(log == null)
+	public List<Long> query(Incident incident) {
+		if(log == null){
+			System.out.println("No log.");
 			return new ArrayList<Long>();
+		}
 		this.log = log;
 		Thread t = new Thread(incident.tree.root);
 		t.start();

@@ -28,7 +28,7 @@ public abstract class IncidentTreeNode implements Runnable, Serializable{
 		name = str;
 		left = null;
 		right = null;
-		occs = new HashMap<Long, List<Occurrence>>();
+		occs = null;
 	}
 	
 	public NodeType getType() {

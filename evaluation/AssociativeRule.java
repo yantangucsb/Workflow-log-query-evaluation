@@ -26,6 +26,7 @@ public class AssociativeRule extends OperatorRule{
 
 	@Override
 	public void perform(IncidentTree it, IncidentTreeNode cur, String accessCode) {
+//		System.out.println("[Debug] perform associative rule on Node: " + cur.name);
 		IncidentTreeNode parent = it.root, node = it.root;
 		for(char ch: accessCode.toCharArray()){
 			if(ch == '0'){

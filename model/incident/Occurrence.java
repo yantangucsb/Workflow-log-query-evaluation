@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import evaluation.QueryEngine;
 import model.log.*;
 
 public class Occurrence {
@@ -12,6 +13,8 @@ public class Occurrence {
 	public long wid;
 	long start;
 	long end;
+	//preMap is the preSnapshot for the 1st record
+	//postMap is the preSnapshot for the size-th record (the one after the last record)
 	public Map<String, String> preMap, postMap;
 	
 	
@@ -20,8 +23,9 @@ public class Occurrence {
 		start = -1;
 		end = -1;
 		this.wid = wid;
-		preMap = new HashMap<String, String>();
-		postMap = new HashMap<String, String>();
+		//11/1/2016 by Yan for save space
+		preMap = null;
+		postMap = null;
 	}
 
 	public Occurrence(LogRecord r) {
@@ -30,11 +34,12 @@ public class Occurrence {
 		start = r.islsn;
 		end = r.islsn;
 		wid = r.wid;
-		preMap = new HashMap<String, String>(r.preSnapshot);
-		postMap = new HashMap<String, String>(r.preSnapshot);
-		for(Map.Entry<String, String> pair:r.attWrite.entrySet()){
-			postMap.put(pair.getKey(), pair.getValue());
-		}
+		preMap = r.preSnapshot;
+		int recordSize = QueryEngine.queryEngine.log.records.size();
+		if(r.lsn >= recordSize){
+			postMap = QueryEngine.queryEngine.log.snapshots.get(r.wid);
+		}else
+			postMap = QueryEngine.queryEngine.log.records.get((int) (r.lsn)).preSnapshot;
 	}
 
 	public void setTimeInterval(long s, long e) {
@@ -55,13 +60,15 @@ public class Occurrence {
 	}
 
 	public void setPreMap(Map<String, String> preSnapshot) {
-		preMap.putAll(preSnapshot);
+		preMap = preSnapshot;
 		
 	}
 
 	public void setPostMap(Map<String, String> postSnapshot) {
-		postMap.putAll(postSnapshot);
+		postMap = postSnapshot;
 	}
+	
+	//for estimation
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();

@@ -37,12 +37,12 @@ public class IncidentTree implements Serializable{
 		IncidentTreeNode cur = null;
 		int level = 0;
 		char[] chs = query.toCharArray();
-		int i=0;
-		for(; i<chs.length; i++){
+		int i=chs.length-1;
+		for(; i>=0; i--){
 			if(chs[i] == '(' || chs[i] == '['){
-				level++;
-			}else if(chs[i] == ')' || chs[i] == ']'){
 				level--;
+			}else if(chs[i] == ')' || chs[i] == ']'){
+				level++;
 			}else if((chs[i] >= 'a' && chs[i] <= 'z') || (chs[i] >= 'A' && chs[i] <= 'Z')){
 				continue;
 			}else if(QueryEngine.queryEngine.isOperator(chs[i]+"")){
@@ -51,7 +51,7 @@ public class IncidentTree implements Serializable{
 				}
 			}
 		}
-		if(i == chs.length){
+		if(i == -1){
 //			System.out.println("[Debug: query containing only activities] " + query);
 			int l = 0, r= chs.length-1;
 			while(l < r && chs[l] == '(' && chs[r] == ')'){
@@ -116,28 +116,41 @@ public class IncidentTree implements Serializable{
 		StringBuilder sb = new StringBuilder();
 		qu.add(root);
 		while(!qu.isEmpty()){
-			IncidentTreeNode cur = qu.remove();
-			if(cur == null){
-				sb.append("null,");
-				continue;
-			}
-			sb.append('[');
-			sb.append(cur.type);
-			sb.append(',');
-			if(cur.type == NodeType.COND){
-				sb.append('\"');
-				sb.append(((ConditionNode)cur).preCon);
-				sb.append('\"');
+			int size = qu.size();
+			boolean hasNode = false;
+			for(int i=0; i<size; i++){
+				IncidentTreeNode cur = qu.remove();
+				if(cur == null){
+					sb.append("null,");
+					continue;
+				}
+				sb.append('[');
+				sb.append(cur.type);
 				sb.append(',');
-				sb.append('\"');
-				sb.append(((ConditionNode)cur).postCon);
-				sb.append('\"');
-			}else
-				sb.append(cur.name);
-			sb.append("],");
-			
-			qu.add(cur.left);
-			qu.add(cur.right);
+				if(cur.type == NodeType.COND){
+					sb.append('\"');
+					sb.append(((ConditionNode)cur).preCon);
+					sb.append('\"');
+					sb.append(',');
+					sb.append('\"');
+					sb.append(((ConditionNode)cur).postCon);
+					sb.append('\"');
+				}else
+					sb.append(cur.name);
+				sb.append("],");
+				
+				if(!hasNode && (cur.left != null || cur.right != null)){
+					hasNode = true;
+				}
+				qu.add(cur.left);
+				qu.add(cur.right);
+			}
+			if(!hasNode){
+				break;
+			}
+		}
+		if(sb.length() > 0){
+			sb.deleteCharAt(sb.length()-1);
 		}
 		return sb.toString();
 	}

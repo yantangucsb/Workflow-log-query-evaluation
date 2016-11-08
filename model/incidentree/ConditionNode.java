@@ -5,6 +5,7 @@ import java.util.*;
 import evaluation.QueryEngine;
 import model.incident.Occurrence;
 import model.incident.Operator;
+import model.incidentree.IncidentTreeNode.NodeType;
 
 public class ConditionNode extends IncidentTreeNode {
 	public String preCon, postCon;
@@ -19,6 +20,27 @@ public class ConditionNode extends IncidentTreeNode {
 		postMap = new HashMap<String, String>();
 	}
 	
+	public ConditionNode(IncidentTreeNode root) {
+		super(root.name);
+		type = root.type;
+		if(root.left != null){
+			if(root.left.type == NodeType.OP)
+				this.left = new OpNode(root.left);
+			else if(root.left.type == NodeType.ACTI)
+				this.left = new ActiNode(root.left);
+			else
+				this.left = new ConditionNode(root.left);
+		}
+		if(root.right != null){
+			if(root.right.type == NodeType.OP)
+				this.right = new OpNode(root.right);
+			else if(root.right.type == NodeType.ACTI)
+				this.right = new ActiNode(root.right);
+			else
+				this.right = new ConditionNode(root.right);
+		}
+	}
+
 	public void setConditions(String str1, String str2){
 		preCon = str1;
 		postCon = str2;
@@ -54,6 +76,7 @@ public class ConditionNode extends IncidentTreeNode {
 			e.printStackTrace();
 		}
 		
+		this.occs = new HashMap<Long, List<Occurrence>>();
 		for(long key: left.occs.keySet()){
 			List<Occurrence> li = left.occs.get(key);
 			for(Occurrence occ: li){
@@ -83,7 +106,31 @@ public class ConditionNode extends IncidentTreeNode {
 //			if(occ.preMap.containsKey(pair.getKey()) && occ.preMap.get(pair.getKey()) == pair.getValue())
 //				return false;
 		}
+		
+		// Based on def of postcondition
+		// If it is effect of the occ not the postsnapshot, then uncomment the following
+		return checkEffect(occ);
+	}
+
+	private boolean checkEffect(Occurrence occ) {
+		for(String str: postMap.keySet()){
+			boolean found = false;
+			for(int i=occ.size()-1; i>=0; i--){
+				if(occ.get(i).attWrite.containsKey(str)){
+					if(!found)
+						found = true;
+					if(occ.get(i).attWrite.get(str).equals(postMap.get(str))){
+						break;
+					}else{
+						return false;
+					}
+				}
+			}
+			if(!found)
+				return false;
+		}
 		return true;
+		
 	}
 
 }
