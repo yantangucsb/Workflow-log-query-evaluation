@@ -50,7 +50,6 @@ public class QueryEngine {
 			System.out.println("No log.");
 			return new ArrayList<Long>();
 		}
-		this.log = log;
 		Thread t = new Thread(incident.tree.root);
 		t.start();
 		try {

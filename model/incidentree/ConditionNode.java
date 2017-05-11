@@ -76,8 +76,8 @@ public class ConditionNode extends IncidentTreeNode {
 			e.printStackTrace();
 		}
 		
-		this.occs = new HashMap<Long, List<Occurrence>>();
-		for(long key: left.occs.keySet()){
+		this.occs = new HashMap<Integer, List<Occurrence>>();
+		for(int key: left.occs.keySet()){
 			List<Occurrence> li = left.occs.get(key);
 			for(Occurrence occ: li){
 				if(checkCondition(occ)){
@@ -89,18 +89,22 @@ public class ConditionNode extends IncidentTreeNode {
 			}
 		
 		}
+		for(List<Occurrence> li: occs.values()){
+			this.size += li.size();
+		}
+		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
 	}
 
 	private boolean checkCondition(Occurrence occ) {
 //		System.err.println("[Debug: cur condition node post map size] " + this.postMap.size());
 //		System.err.println("[Debug: post Map] " + occ.postMap);
 		for(Map.Entry<String, String> pair: preMap.entrySet()){
-			if(!occ.preMap.containsKey(pair.getKey()) || !occ.preMap.get(pair.getKey()).equals(pair.getValue())){
+			if(!occ.getPreMap().containsKey(pair.getKey()) || !occ.getPreMap().get(pair.getKey()).equals(pair.getValue())){
 				return false;
 			}
 		}
 		for(Map.Entry<String, String> pair: postMap.entrySet()){
-			if(!occ.postMap.containsKey(pair.getKey()) || !occ.postMap.get(pair.getKey()).equals(pair.getValue())){
+			if(!occ.getPostMap().containsKey(pair.getKey()) || !occ.getPostMap().get(pair.getKey()).equals(pair.getValue())){
 				return false;
 			}
 //			if(occ.preMap.containsKey(pair.getKey()) && occ.preMap.get(pair.getKey()) == pair.getValue())

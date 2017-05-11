@@ -14,8 +14,12 @@ import model.incident.Occurrence;
 public class Log {
 	public List<LogRecord> records;
 	public Map<String, Activity> actiStat;
-	public Map<Long, Map<String, String>> snapshots;
+	public Map<Integer, Map<String, String>> snapshots;
+	//info for model 3
+	public Map<String, ProbModel> probInfo;
 	public long numWorkflow;
+	
+	public Map<String, Map<Integer, List<Occurrence>>> actiIndex;
 	
 	public Log(){
 		init();
@@ -29,8 +33,10 @@ public class Log {
 	private void init() {
 		records = new ArrayList<LogRecord>();
 		actiStat = new HashMap<String, Activity>();
-		snapshots = new HashMap<Long, Map<String, String>>();
+		probInfo = new HashMap<String, ProbModel>();
+		snapshots = new HashMap<Integer, Map<String, String>>();
 		numWorkflow = 0;
+		actiIndex = new HashMap<String, Map<Integer, List<Occurrence>>>();
 	}
 	
 	public int size(){
@@ -62,6 +68,9 @@ public class Log {
 	            line = br.readLine();
 //	            System.out.println(record.toString());
 	        }
+	        for(String str: probInfo.keySet()){
+	        	probInfo.get(str).normalize();
+	        }
 	        System.out.println("# of Lines processed: " + count);
 	    }catch(Exception e){
 	    	System.out.println("load log file failed! ");
@@ -91,19 +100,30 @@ public class Log {
 			record.addPreSnapshot(atts);
 		}
 		
-		if(!actiStat.containsKey(record.actiName)){
+		//update model 1/2 statistics
+/*		if(!actiStat.containsKey(record.actiName)){
 			Activity acti = new Activity(record.actiName);
 			acti.update(record.wid, record.islsn);
 			actiStat.put(record.actiName, acti);
 			return;
 		}
 		Activity acti = actiStat.get(record.actiName);
-		acti.update(record.wid, record.islsn);
+		acti.update(record.wid, record.islsn);*/
+		
+		//update model 3 statistics
+		if(!probInfo.containsKey(record.actiName)){
+			probInfo.put(record.actiName, new ProbModel());
+			
+		}
+		probInfo.get(record.actiName).updateActiHist(record);
 		
 	}
 
-	public Map<Long, List<Occurrence>> filter(String name) {
-		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+	public Map<Integer, List<Occurrence>> filter(String name) {
+		if(actiIndex.containsKey(name)){
+			return actiIndex.get(name);
+		}
+		Map<Integer, List<Occurrence>> res = new HashMap<Integer, List<Occurrence>>();
 		for(LogRecord r: records){
 			if(r.actiName.equals(name)){
 				if(!res.containsKey(r.wid)){
@@ -112,6 +132,7 @@ public class Log {
 				res.get(r.wid).add(new Occurrence(r));
 			}
 		}
+		actiIndex.put(name, res);
 		return res;
 	}
 	

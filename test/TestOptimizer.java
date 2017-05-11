@@ -1,7 +1,11 @@
 package test;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
+
 import model.incident.Incident;
+import model.incident.Occurrence;
 import model.incidentree.IncidentTree;
 import model.log.Log;
 
@@ -12,7 +16,7 @@ import evaluation.Optimizer;
 import evaluation.QueryEngine;
 
 public class TestOptimizer extends Optimizer {
-	Log log = new Log("data/output_07.txt");
+	Log log = new Log("data/output_08.txt");
 //	Log log = new Log("data/tranlog.txt");
 
 	@Test
@@ -21,6 +25,58 @@ public class TestOptimizer extends Optimizer {
 		System.out.println(QueryEngine.queryEngine.log.statInfo());
 		Incident incident = new Incident("start.GetRefer.SeeDoctor");
 		System.out.println(Optimizer.estimateCost(incident.tree, 1));
+		
+	}
+	
+	@Test
+	public void testProbModel_synthetic(){
+		QueryEngine.queryEngine.log = log;
+		//System.out.println(log.toString());
+		//Incident incident = new Incident("GetRefer.CheckIn");
+		//Incident incident = new Incident("MAINDATA.VITALS");
+		String[] qs = {"GetRefer.CheckIn", "start.GetRefer", "start.CheckIn", "CheckIn.SeeDoctor", "CheckIn.PayTreatment", "start.GetRefer.CheckIn"};
+		for(String str: log.probInfo.keySet()){
+			System.out.println(str + log.probInfo.get(str).toString());
+		}
+		for(int i=0; i<qs.length; i++){
+			System.out.println("Test case " + i + ":");
+			Incident incident = new Incident(qs[i]);
+			
+			System.out.println("Estimated cost: " + Optimizer.estimateCost(incident.tree, 3));
+			List<Occurrence> res = QueryEngine.queryEngine.queryOcc(incident, log);
+			System.out.println("Result: " + res.size() + "," + res.toString());
+			
+		}
+		
+	}
+	
+	@Test
+	public void testProbModel_trauma(){
+		QueryEngine.queryEngine.log = log;
+		//System.out.println(log.toString());
+		//Incident incident = new Incident("GetRefer.CheckIn");
+		//Incident incident = new Incident("MAINDATA.VITALS");
+		String[] qs = {"ICU.INJDETS", "TRANSFER.TRA", "ICU.HOSPREV", "PRECONDS.HOSPREV",
+				"MTOS.QAISSUE", "INJDETS.PROTECT", "FLDDETAI.INJDETS", "VITALS.FLDDETAI",
+				"TREATMEN.LAB", "MORTDETS.ORGANS"};
+		String[] qs1 = {"BURNS.HEMO.TREATMEN",
+				"LAB.LAB.DIAGS",
+				"EMERG.POSTHOSP.INJDIAG",
+				"PRECONDS.INJMECH.ADM_INPT",
+				"HEMO.READMIT.STEP",
+				"POSTHOSP.RADIOLOG.NARRATIV",
+				"QAISSUE.CULTURE.POSTHOSP",
+				"PRECONDS.TTDETLS.CULTURE",
+				"ICU.CONSULT.CONSULT",
+				"OPRM.INJMECH.LAB"};
+		for(int i=0; i<qs1.length; i++){
+			System.out.println("Test case " + i + ":");
+			Incident incident = new Incident(qs1[i]);
+			System.out.println("Estimated cost: " + Optimizer.estimateCost(incident.tree, 3));
+			List<Occurrence> res = QueryEngine.queryEngine.queryOcc(incident, log);
+			System.out.println("Result: " + res.size());
+			//System.out.println("Result: " + res.size() + "," + res.toString());
+		}
 		
 	}
 	

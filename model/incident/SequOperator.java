@@ -7,17 +7,18 @@ import java.util.Map;
 
 import evaluation.CostModel;
 import model.log.Activity;
+import model.log.ProbModel;
 
 public class SequOperator extends Operator {
-	public  Map<Long, List<Occurrence>> execute(
-			Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
-		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+	public  Map<Integer, List<Occurrence>> execute(
+			Map<Integer, List<Occurrence>> occs1, Map<Integer, List<Occurrence>> occs2){
+		Map<Integer, List<Occurrence>> res = new HashMap<Integer, List<Occurrence>>();
 		
 		if(occs1.size() == 0 || occs2.size() == 0){
 			return res;
 		}
 		
-		for(long key: occs1.keySet()){
+		for(int key: occs1.keySet()){
 			if(!occs2.containsKey(key))
 				continue;
 			List<Occurrence> li1 = occs1.get(key);
@@ -37,7 +38,7 @@ public class SequOperator extends Operator {
 	}
 
 	private Occurrence merge(Occurrence occ1, Occurrence occ2) {
-		Occurrence occ = new Occurrence(occ1.wid);
+/*		Occurrence occ = new Occurrence(occ1.wid);
 		occ.seq.addAll(occ1.seq);
 		occ.seq.addAll(occ2.seq);
 		occ.setTimeInterval(occ1.start, occ2.end);
@@ -48,8 +49,8 @@ public class SequOperator extends Operator {
 //		occ.postMap.putAll(occ2.postMap);
 		
 		occ.setPreMap(occ1.preMap);
-		occ.setPostMap(occ2.postMap);
-		return occ;
+		occ.setPostMap(occ2.postMap);*/
+		return new Occurrence(occ1, occ2);
 	}
 
 	@Override
@@ -73,6 +74,12 @@ public class SequOperator extends Operator {
 		cur.count = countPerInst * a1.numStart;
 		cur.numStart = a1.numStart;
 		return cur;
+	}
+
+	@Override
+	public ProbModel estimate(ProbModel incidentHist1, ProbModel incidentHist2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

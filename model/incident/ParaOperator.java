@@ -10,16 +10,17 @@ import evaluation.CostModel;
 import evaluation.QueryEngine;
 import model.log.Activity;
 import model.log.LogRecord;
+import model.log.ProbModel;
 
 public class ParaOperator extends Operator {
-	public Map<Long, List<Occurrence>> execute(Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
-		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>();
+	public Map<Integer, List<Occurrence>> execute(Map<Integer, List<Occurrence>> occs1, Map<Integer, List<Occurrence>> occs2){
+		Map<Integer, List<Occurrence>> res = new HashMap<Integer, List<Occurrence>>();
 		
 		if(occs1.size() == 0 || occs2.size() == 0){
 			return res;
 		}
 		
-		for(long key: occs1.keySet()){
+		for(int key: occs1.keySet()){
 			if(!occs2.containsKey(key))
 				continue;
 			List<Occurrence> li1 = occs1.get(key);
@@ -40,12 +41,12 @@ public class ParaOperator extends Operator {
 	}
 
 	private boolean hasOverlap(Occurrence occ1, Occurrence occ2) {
-		HashSet<Long> lsns = new HashSet<Long>();
-		for(LogRecord l: occ1.seq){
-			lsns.add(l.islsn);
+		HashSet<Integer> lsns = new HashSet<Integer>();
+		for(int l: occ1.seq){
+			lsns.add(l);
 		}
-		for(LogRecord l: occ2.seq){
-			if(lsns.contains(l.islsn)){
+		for(int l: occ2.seq){
+			if(lsns.contains(l)){
 				return true;
 			}
 		}
@@ -58,7 +59,7 @@ public class ParaOperator extends Operator {
 	 * current version of merge
 	 */
 	private Occurrence merge(Occurrence occ1, Occurrence occ2) {
-		Occurrence occ = new Occurrence(occ1.wid);
+/*		Occurrence occ = new Occurrence(occ1.wid);
 		int i=0, j=0;
 		while(i<occ1.size() || j<occ2.size()){
 			if(i == occ1.size()){
@@ -92,8 +93,8 @@ public class ParaOperator extends Operator {
 				LogRecord afterLast = QueryEngine.queryEngine.log.records.get((int) (last.lsn));
 				occ.setPostMap(afterLast.preSnapshot);
 			}
-		}
-		return occ;
+		}*/
+		return new Occurrence(occ1, occ2);
 	}
 
 	@Override
@@ -113,6 +114,12 @@ public class ParaOperator extends Operator {
 		cur.count = a1.count * a2.count * Math.min(a2.numStart, a1.numStart);
 		cur.numStart = Math.max(a1.numStart, a2.numStart);
 		return cur;
+	}
+
+	@Override
+	public ProbModel estimate(ProbModel incidentHist1, ProbModel incidentHist2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

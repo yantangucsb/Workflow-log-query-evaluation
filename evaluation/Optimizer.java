@@ -13,6 +13,7 @@ import model.incident.Incident;
 import model.incidentree.*;
 import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Activity;
+import model.log.ProbModel;
 
 public class Optimizer {
 	static double filterRate = 10.0;
@@ -20,6 +21,12 @@ public class Optimizer {
 	static int limitedSearchSpace = Integer.MAX_VALUE;
 	static Set<String> visited;
 
+	/*
+	 * @Param: model is a label of cost model
+	 * model == 1, the cost model with assumption that no repeated activities in one instance
+	 * model == 2, average of occurrence of activities is assumed
+	 * model == 3, probability model built on histogram
+	 */
 	public static void generateOptimalTree(Incident incident, int model) {
 		incident.optiTree = incident.tree;
 		IncidentTree curTree = SerializationUtils.clone(incident.tree);
@@ -91,7 +98,57 @@ public class Optimizer {
 	public static double estimateCost(IncidentTree it, int model){
 		if(it == null)
 			return 0;
+		if(model == 3){
+			return estimate3(it.root, 3).cost;
+		}
 		return estimate(it.root, model).cost;
+	}
+
+	private static ProbModel estimate3(IncidentTreeNode root, int model) {
+		long logSize = QueryEngine.queryEngine.log.size();
+		
+		ProbModel curModel = null;
+		if(root == null)
+			return null;
+		else if(root.getType() == NodeType.ACTI){
+			if(!QueryEngine.queryEngine.log.probInfo.containsKey(root.name)){
+//				System.err.println("Current log doesn't have the activity: " + root.name);
+				curModel = new ProbModel();
+			}else 
+				curModel = QueryEngine.queryEngine.log.probInfo.get(root.name);
+		}else if(root.getType() == NodeType.COND){
+			ProbModel probLeft = estimate3(root.left, model);
+			if(probLeft == null || probLeft.numActi == 0){
+				curModel = probLeft;
+			}else{
+				//condition node filter on a fixted rate
+				
+				//Caution: the histograms should change along the numActi
+				probLeft.numActi /= filterRate;
+				probLeft.cost = probLeft.cost + probLeft.numActi/logSize;
+				curModel = probLeft;
+			}
+		}else{
+			ProbModel costLeft = estimate3(root.left, model);
+			ProbModel costRight = estimate3(root.right, model);
+			double curCost = costLeft.cost + costRight.cost;
+			double normLeftSize = (double)costLeft.numActi/logSize;
+			double normRightSize = (double)costRight.numActi/logSize;
+			switch(root.name){
+			//binary search: normLeftSize*(Math.log(normRightSize)/Math.log(2))
+			//linear scan: normLeftSize*normRightSize
+			case ".": curCost += normLeftSize + normRightSize; break;
+			case ":": curCost += normLeftSize*costRight.numActi; break;
+			case "|": curCost += normLeftSize + normRightSize; break;
+			case "+": curCost += normLeftSize * costRight.numActi; break;
+			default: break;
+			}
+			
+			curModel = QueryEngine.queryEngine.operators.get(root.name).estimate(costLeft, costRight);
+			curModel.cost = curCost;
+		}
+		System.out.format("%s\tnumActi:\t%d\tcost:\t%f\n", root.name, curModel.numActi, curModel.cost);
+		return curModel;
 	}
 
 	//normalized cost with log size -- 11/4/2016
@@ -122,7 +179,10 @@ public class Optimizer {
 		}else{
 			CostModel costLeft = estimate(root.left, model);
 			CostModel costRight = estimate(root.right, model);
-			double curCost = Math.max(costLeft.cost, costRight.cost);
+			//measure wall clock time
+			//double curCost = Math.max(costLeft.cost, costRight.cost);
+			//measure machine time
+			double curCost = costLeft.cost + costRight.cost;
 			int len = costLeft.len + costRight.len;
 			double normLeftSize = (double)costLeft.count/logSize;
 			double normRightSize = (double)costRight.count/logSize;

@@ -31,7 +31,7 @@ public class Main {
 //		testOrOp(log);
 //		testParaOp(log);
 		
-		String[] qs1 = generateIncident('*', 6, 10);
+		String[] qs1 = generateIncident('*', 2, 10);
 		for(int i=0; i<qs1.length; i++){
 			System.out.println("\"" + qs1[i] + "\",");
 		}
@@ -50,7 +50,7 @@ public class Main {
 		String[] qs2 = {"NARRATIV+WARD:HOSPREV|TTDETLS.OPRM.HEMO+STEP"};
 		String[] qs3 = {"POSTHOSP:HOSPREV|TREATMEN|WARD.(CONSULT.POSTHOSPP)"};
 		String[] qs4 = {"(TTDETLS:NARRATIV)|(TRA:NARRATIV).(QAISSUE:ICU)"};
-		test(qs2, 2);
+//		test(qs2, 2);
 //		test(qs, 1);
 //		test(qs, 0);
 	}

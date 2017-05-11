@@ -7,11 +7,12 @@ import java.util.Map;
 
 import evaluation.CostModel;
 import model.log.Activity;
+import model.log.ProbModel;
 
 public class ExclOperator extends Operator {
-	public Map<Long, List<Occurrence>> execute(Map<Long, List<Occurrence>> occs1, Map<Long, List<Occurrence>> occs2){
-		Map<Long, List<Occurrence>> res = new HashMap<Long, List<Occurrence>>(occs1);
-		for(long key: occs2.keySet()){
+	public Map<Integer, List<Occurrence>> execute(Map<Integer, List<Occurrence>> occs1, Map<Integer, List<Occurrence>> occs2){
+		Map<Integer, List<Occurrence>> res = new HashMap<Integer, List<Occurrence>>(occs1);
+		for(int key: occs2.keySet()){
 			if(!res.containsKey(key)){
 				res.put(key, new ArrayList<Occurrence>());
 			}
@@ -33,5 +34,11 @@ public class ExclOperator extends Operator {
 		cur.count = a1.count + a2.count;
 		cur.numStart = Math.max(a1.numStart, a2.numStart);
 		return cur;
+	}
+
+	@Override
+	public ProbModel estimate(ProbModel incidentHist1, ProbModel incidentHist2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

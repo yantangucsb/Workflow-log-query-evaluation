@@ -1,6 +1,9 @@
 package model.incidentree;
 
+import java.util.List;
+
 import evaluation.QueryEngine;
+import model.incident.Occurrence;
 import model.incident.Operator;
 
 
@@ -55,7 +58,10 @@ public class OpNode extends IncidentTreeNode{
 		
 		Operator op = QueryEngine.queryEngine.operators.get(name);
 		occs = op.execute(left.occs, right == null ? null: right.occs);
-		
+		for(List<Occurrence> li: occs.values()){
+			this.size += li.size();
+		}
 //		System.err.println("[Debug: query thread] Operator Node " + name + " get occurrences " + occs.size());
+		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
 	}
 }

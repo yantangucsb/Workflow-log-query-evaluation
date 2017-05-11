@@ -7,9 +7,9 @@ import java.util.Map;
 import model.incident.*;
 
 public class LogRecord {
-	public long lsn;
-	public long wid;
-	public long islsn;
+	public int lsn;
+	public int wid;
+	public int islsn;
 	public String actiName;
 	public Map<String, String> attRead;
 	public Map<String, String> attWrite;
@@ -21,9 +21,9 @@ public class LogRecord {
 		
 		String[] parts = logEntry.split(" ");
 
-		lsn = Long.parseLong(parts[0]);
-		wid = Long.parseLong(parts[1]);
-		islsn = Long.parseLong(parts[2]);
+		lsn = Integer.parseInt(parts[0]);
+		wid = Integer.parseInt(parts[1]);
+		islsn = Integer.parseInt(parts[2]);
 		actiName = parts[3];
 		int i = 4;
 		

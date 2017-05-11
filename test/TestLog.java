@@ -24,13 +24,13 @@ public class TestLog {
 	@Test
 	public void testPreprocess() {
 //		System.out.println(log);
-		Set<Long> set = new HashSet<Long>();
+		Set<Integer> set = new HashSet<Integer>();
 		for(LogRecord lr: log.records){
 			if(lr.actiName.equals("ICU") && lr.attWrite.containsKey("los") && lr.attWrite.get("los").equals("1")){
 				set.add(lr.wid);
 			}
 		}
-		List<Long> li = new ArrayList<Long>(set);
+		List<Integer> li = new ArrayList<Integer>(set);
 		Collections.sort(li);
 		System.out.println(li.toString());
 	}

@@ -1,6 +1,9 @@
 package model.incidentree;
 
+import java.util.List;
+
 import evaluation.QueryEngine;
+import model.incident.Occurrence;
 import model.incident.Operator;
 import model.incidentree.IncidentTreeNode.NodeType;
 import model.log.Log;
@@ -38,7 +41,14 @@ public class ActiNode extends IncidentTreeNode {
 	public void run() {
 //		System.err.println("[Debug: query thread] Acti Node " + name);
 		this.occs = QueryEngine.queryEngine.log.filter(name);
+		
+		//for optimizer performance analysis
+		//should be commented when testing efficiency
+		for(List<Occurrence> li: occs.values()){
+			this.size += li.size();
+		}
 //		System.err.println("[Debug: query thread] Acti Node " + name + " get occurrences " + occs.size());
+		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
 	}
 	
 }
