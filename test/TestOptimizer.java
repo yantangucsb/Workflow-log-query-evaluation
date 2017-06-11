@@ -16,7 +16,7 @@ import evaluation.Optimizer;
 import evaluation.QueryEngine;
 
 public class TestOptimizer extends Optimizer {
-	Log log = new Log("data/output_08.txt");
+	Log log = new Log("data/output_07.txt");
 //	Log log = new Log("data/tranlog.txt");
 
 	@Test
@@ -59,6 +59,17 @@ public class TestOptimizer extends Optimizer {
 		String[] qs = {"ICU.INJDETS", "TRANSFER.TRA", "ICU.HOSPREV", "PRECONDS.HOSPREV",
 				"MTOS.QAISSUE", "INJDETS.PROTECT", "FLDDETAI.INJDETS", "VITALS.FLDDETAI",
 				"TREATMEN.LAB", "MORTDETS.ORGANS"};
+		String[] qs2 = {"ICU:INJDETS", "TRANSFER:TRA", "ICU:HOSPREV", "PRECONDS:HOSPREV",
+				"MTOS:QAISSUE", "INJDETS:PROTECT", "FLDDETAI:INJDETS", "VITALS:FLDDETAI",
+				"TREATMEN:LAB", "MORTDETS:ORGANS"};
+		String[] qs3 = {"ICU|INJDETS", "TRANSFER|TRA", "ICU|HOSPREV", "PRECONDS|HOSPREV",
+				"MTOS|QAISSUE", "INJDETS|PROTECT", "FLDDETAI|INJDETS", "VITALS|FLDDETAI",
+				"TREATMEN|LAB", "MORTDETS|ORGANS"};
+		String[] qs4 = {"ICU+INJDETS", "TRANSFER+TRA", "ICU+HOSPREV", "PRECONDS+HOSPREV",
+				"MTOS+QAISSUE", "INJDETS+PROTECT", "FLDDETAI+INJDETS", "VITALS+FLDDETAI",
+				"TREATMEN+LAB", "MORTDETS+ORGANS"};
+		//System.out.println(QueryEngine.queryEngine.log.probInfo.get("MORTDETS"));
+		//System.out.println(QueryEngine.queryEngine.log.probInfo.get("ORGANS"));
 		String[] qs1 = {"BURNS.HEMO.TREATMEN",
 				"LAB.LAB.DIAGS",
 				"EMERG.POSTHOSP.INJDIAG",
@@ -69,9 +80,10 @@ public class TestOptimizer extends Optimizer {
 				"PRECONDS.TTDETLS.CULTURE",
 				"ICU.CONSULT.CONSULT",
 				"OPRM.INJMECH.LAB"};
-		for(int i=0; i<qs1.length; i++){
+		for(int i=0; i<qs4.length; i++){
 			System.out.println("Test case " + i + ":");
-			Incident incident = new Incident(qs1[i]);
+			Incident incident = new Incident(qs4[i]);
+			
 			System.out.println("Estimated cost: " + Optimizer.estimateCost(incident.tree, 3));
 			List<Occurrence> res = QueryEngine.queryEngine.queryOcc(incident, log);
 			System.out.println("Result: " + res.size());

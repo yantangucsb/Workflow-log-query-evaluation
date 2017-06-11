@@ -50,7 +50,7 @@ public class Main {
 		String[] qs2 = {"NARRATIV+WARD:HOSPREV|TTDETLS.OPRM.HEMO+STEP"};
 		String[] qs3 = {"POSTHOSP:HOSPREV|TREATMEN|WARD.(CONSULT.POSTHOSPP)"};
 		String[] qs4 = {"(TTDETLS:NARRATIV)|(TRA:NARRATIV).(QAISSUE:ICU)"};
-//		test(qs2, 2);
+		test(qs2, 3);
 //		test(qs, 1);
 //		test(qs, 0);
 	}
