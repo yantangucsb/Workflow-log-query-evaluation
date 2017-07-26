@@ -27,16 +27,24 @@ public class Optimizer {
 	 * model == 2, average of occurrence of activities is assumed
 	 * model == 3, probability model built on histogram
 	 */
-	public static void generateOptimalTree(Incident incident, int model) {
+	public static boolean generateOptimalTree(Incident incident, int model) {
+		List<Double> estiCost = new ArrayList<Double>();
+		List<Double> realCost = new ArrayList<Double>();
+		List<String> rewrite = new ArrayList<String>();
 		incident.optiTree = incident.tree;
 		IncidentTree curTree = SerializationUtils.clone(incident.tree);
 		Queue<IncidentTree> frontier = new LinkedList<IncidentTree>();
 		frontier.add(curTree);
 		visited = new HashSet<String>();
 		double optiCost = estimateCost(incident.optiTree, model);
+		int bestEsti = 0;
+		int bestReal = 0;
 		int count = 0;
 		while(!frontier.isEmpty()){
 			IncidentTree front = frontier.remove();
+			if(visited.contains(front.toString())){
+				continue;
+			}
 			count++;
 			if(count == limitedSearchSpace)
 				break;
@@ -47,21 +55,47 @@ public class Optimizer {
 				if(optiCost < epsilon)
 					break;
 			}
-//			System.out.println("[Debug] Frontier: " + front.toString() + "\nCost: " + curCost);
+//			System.out.printf("[Debug] Frontier: %s\nCost: %.2f\n", front.toString(), curCost);
+			estiCost.add(curCost);
+			rewrite.add(front.toString());
 			
 			visited.add(front.toString());
 			List<IncidentTree> li = new ArrayList<IncidentTree>();
 			generate(front, front.root, li, "");
 			for(IncidentTree it: li){
 				frontier.add(it);
-				visited.add(it.toString());
 			}
-//			System.out.println("Runtime: " + testRuntime(front));
+			double realRuntime = testRuntime(front);
+			realCost.add(realRuntime);
+			if(curCost < estiCost.get(bestEsti)) {
+				bestEsti = estiCost.size()-1;
+			}
+			if(realRuntime < realCost.get(bestReal)) {
+				bestReal = realCost.size()-1;
+			}
+//			System.out.printf("Runtime: %.3f\n", testRuntime(front));
 		}
+		if(Math.abs(realCost.get(bestReal) - realCost.get(bestEsti))/realCost.get(bestReal) <= 0.5){
+			//System.out.println("Best matched.");
+			return true;
+		}
+		return false;
 //		System.out.println(incident.optiTree.toString());
+/*		for(String str: rewrite){
+			System.out.println(str);
+		}
+		for(double x: estiCost){
+			System.out.printf("%.2f,", x);
+		}
+		System.out.println();
+		for(double x: realCost){
+			System.out.printf("%.2f,", x);
+		}
+		System.out.println();*/
 	}
 	
-	private static long testRuntime(IncidentTree front) {
+	//calculated using time complexity
+	private static double testRuntime(IncidentTree front) {
 		long t1 = System.currentTimeMillis();
 		Thread t = new Thread(front.root);
 		t.start();
@@ -72,7 +106,28 @@ public class Optimizer {
 			e.printStackTrace();
 		}
 		long t2 = System.currentTimeMillis();
-		return t2 - t1;
+		return calcCost(front.root);
+	}
+
+	private static double calcCost(IncidentTreeNode root) {
+		double norm = QueryEngine.queryEngine.log.size();
+		if(root == null){
+			return 0;
+		}else if(root.type == NodeType.COND){
+			return calcCost(root.left) + root.left.size/norm;
+		}else if(root.type == NodeType.ACTI){
+			return 0;
+		}else{
+			double cost = calcCost(root.left) + calcCost(root.right);
+			switch(root.name){
+			case ".": cost += 1.0*(root.left.size + root.right.size)/norm; break;
+			case ":": cost += 1.0*root.left.size * root.right.size/norm; break;
+			case "|": cost += 1.0*(root.left.size + root.right.size)/norm; break;
+			case "+": cost += 1.0*root.left.size * root.right.size/norm; break;
+			default: break;
+			}
+			return cost;
+		}
 	}
 
 	private static void generate(IncidentTree curTree, IncidentTreeNode cur,
@@ -147,7 +202,7 @@ public class Optimizer {
 			curModel = QueryEngine.queryEngine.operators.get(root.name).estimate(costLeft, costRight);
 			curModel.cost = curCost;
 		}
-		System.out.format("%s\tnumActi:\t%d\tcost:\t%f\n", root.name, curModel.numActi, curModel.cost);
+		//System.out.format("%s\tnumActi:\t%d\tcost:\t%f\n", root.name, curModel.numActi, curModel.cost);
 		return curModel;
 	}
 

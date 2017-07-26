@@ -62,6 +62,6 @@ public class OpNode extends IncidentTreeNode{
 			this.size += li.size();
 		}
 //		System.err.println("[Debug: query thread] Operator Node " + name + " get occurrences " + occs.size());
-		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
+//		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
 	}
 }

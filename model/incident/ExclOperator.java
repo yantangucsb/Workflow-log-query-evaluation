@@ -12,6 +12,11 @@ import model.log.ProbModel;
 public class ExclOperator extends Operator {
 	public Map<Integer, List<Occurrence>> execute(Map<Integer, List<Occurrence>> occs1, Map<Integer, List<Occurrence>> occs2){
 		Map<Integer, List<Occurrence>> res = new HashMap<Integer, List<Occurrence>>(occs1);
+		if(occs1 == null){
+			return occs2;
+		}else if(occs2 == null){
+			return occs1;
+		}
 		for(int key: occs2.keySet()){
 			if(!res.containsKey(key)){
 				res.put(key, new ArrayList<Occurrence>());

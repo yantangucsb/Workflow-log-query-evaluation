@@ -92,7 +92,7 @@ public class ConditionNode extends IncidentTreeNode {
 		for(List<Occurrence> li: occs.values()){
 			this.size += li.size();
 		}
-		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
+//		System.out.format("[RUN]%s\tnumActi:\t%d\n", this.name, this.size);
 	}
 
 	private boolean checkCondition(Occurrence occ) {

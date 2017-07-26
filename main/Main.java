@@ -31,7 +31,7 @@ public class Main {
 //		testOrOp(log);
 //		testParaOp(log);
 		
-		String[] qs1 = generateIncident('*', 2, 10);
+		String[] qs1 = generateIncident('*', 3, 50);
 		for(int i=0; i<qs1.length; i++){
 			System.out.println("\"" + qs1[i] + "\",");
 		}
@@ -50,7 +50,18 @@ public class Main {
 		String[] qs2 = {"NARRATIV+WARD:HOSPREV|TTDETLS.OPRM.HEMO+STEP"};
 		String[] qs3 = {"POSTHOSP:HOSPREV|TREATMEN|WARD.(CONSULT.POSTHOSPP)"};
 		String[] qs4 = {"(TTDETLS:NARRATIV)|(TRA:NARRATIV).(QAISSUE:ICU)"};
-		test(qs2, 3);
+		String[] qs5 = {"TOXIANAL|TREATMEN:DIAGS:DIAGS"};
+		String[] qs6 = {"PROTECT.INJDIAG|WARD.INJMECH",
+				"STEP+BURNS:FLDDETAI+VITALS",
+				"FINANCE|ADM_INPT|MTOS:HOSPREV",
+				"TTDETLS:MORTDETS.BURNS.WARD",
+				"TREATMEN:EMERG+NARRATIV+FINANCE",
+				"GENMECH+MAINDATA|CONSULT|RADIOLOG",
+				"SURG|HOSPREV+INJMECH+READMIT",
+				"ORGANS:INJDETS:PRECONDS|INJDETS",
+				"TREATMEN+TTDETLS+TRANSFER+READMIT",
+				"FLDDETAI.PROTECT|QAISSUE.MAINDATA"};
+		test(qs1, 3);
 //		test(qs, 1);
 //		test(qs, 0);
 	}
@@ -163,18 +174,21 @@ public class Main {
 	public static void test(String[] qs, int model){
 		long time = 0, max = 0, min = Integer.MAX_VALUE;
 		long optiTime = 0, maxOpti = 0, minOpti = Integer.MAX_VALUE;
+		int count = 0;
 		for(int i=0; i<qs.length; i++){
 			Incident incident = new Incident(qs[i]);
 			if(model > 0){
 				long opti1 = System.currentTimeMillis();
-				Optimizer.generateOptimalTree(incident, model);
+				if(Optimizer.generateOptimalTree(incident, model)){
+					count++;
+				}
 				long opti2 = System.currentTimeMillis();
 				opti2 -= opti1;
 				optiTime += opti2;
 				maxOpti = Math.max(maxOpti, opti2);
 				minOpti = Math.min(minOpti, opti2);
-				System.out.println(incident.tree.toString());
-				System.out.println(incident.optiTree);
+//				System.out.println(incident.tree.toString());
+//				System.out.println(incident.optiTree);
 //				System.out.println("Opti time (millis) for test case " + i + " : " + opti2);
 			}
 			long t1 = System.currentTimeMillis();
@@ -186,6 +200,7 @@ public class Main {
 			min = Math.min(min, t2);
 			System.out.println("Running time(milis) for test case " + i + " : " + t2);
 		}
+		System.out.println("Correct prediction: " + count);
 		System.out.println("Total test cases: " + qs.length);
 		System.out.println("Average runtime: " + time/qs.length);
 //		System.out.println("Max runtime: " + max);
