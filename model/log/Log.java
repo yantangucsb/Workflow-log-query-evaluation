@@ -90,7 +90,8 @@ public class Log {
 
 	//update snapshots and statistics
 	private void updateStatistics(LogRecord record) {
-/*		if(!snapshots.containsKey(record.wid)){
+		// update snapshots
+		if(!snapshots.containsKey(record.wid)){
 			Map<String, String> atts = new HashMap<String, String>();
 			record.addPreSnapshot(atts);
 			snapshots.put(record.wid, atts);
@@ -98,7 +99,7 @@ public class Log {
 		}else{
 			Map<String, String> atts = snapshots.get(record.wid);
 			record.addPreSnapshot(atts);
-		}*/
+		}
 		
 		//update model 1/2 statistics
 /*		if(!actiStat.containsKey(record.actiName)){

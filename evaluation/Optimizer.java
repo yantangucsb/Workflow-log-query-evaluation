@@ -22,12 +22,73 @@ public class Optimizer {
 	static Set<String> visited;
 
 	/*
+	 * Used to do optimizer runtime evaluation
 	 * @Param: model is a label of cost model
 	 * model == 1, the cost model with assumption that no repeated activities in one instance
 	 * model == 2, average of occurrence of activities is assumed
 	 * model == 3, probability model built on histogram
 	 */
-	public static boolean generateOptimalTree(Incident incident, int model) {
+	public static Incident[] generateOptimalTree(Incident incident, int model) {
+		double[] estiCost = {0.0, 0.0};
+		Incident[] rewrite = new Incident[2];
+		rewrite[0] = new Incident();
+		rewrite[1] = new Incident();
+		incident.optiTree = incident.tree;
+		IncidentTree curTree = SerializationUtils.clone(incident.tree);
+		Queue<IncidentTree> frontier = new LinkedList<IncidentTree>();
+		frontier.add(curTree);
+		visited = new HashSet<String>();
+		int count = 0;
+		while(!frontier.isEmpty()){
+			IncidentTree front = frontier.remove();
+			if(visited.contains(front.toString())){
+				continue;
+			}
+			count++;
+			if(count == limitedSearchSpace)
+				break;
+			double curCost = estimateCost(front, model);
+			if(estiCost[0] < 1e-7 || curCost < estiCost[0]){
+				estiCost[0] = curCost;
+				rewrite[0].tree = front;
+				//incident.optiTree = front;
+				//if(estiCost[0] < epsilon)
+					//break;
+			}
+			
+//			System.out.printf("[Debug] Frontier: %s\nCost: %.2f\n", front.toString(), curCost);
+			visited.add(front.toString());
+			List<IncidentTree> li = new ArrayList<IncidentTree>();
+			generate(front, front.root, li, "");
+			for(IncidentTree it: li){
+				frontier.add(it);
+			}
+			double realRuntime = testRuntime(front);
+			if(estiCost[1] < 1e-7 || realRuntime > estiCost[1]){
+				estiCost[1] = realRuntime;
+				rewrite[1].tree = front;
+			}
+//			System.out.printf("Runtime: %.3f\n", testRuntime(front));
+		}
+		return rewrite;
+			//System.out.println("Best matched.");
+		//return false;
+//		System.out.println(incident.optiTree.toString());
+/*		for(String str: rewrite){
+			System.out.println(str);
+		}
+		for(double x: estiCost){
+			System.out.printf("%.2f,", x);
+		}
+		System.out.println();
+		for(double x: realCost){
+			System.out.printf("%.2f,", x);
+		}
+		System.out.println();*/
+	}
+	
+	// used to evaluate optimizer accuracy
+	public static double generateOptimalTree_performance(Incident incident, int model) {
 		List<Double> estiCost = new ArrayList<Double>();
 		List<Double> realCost = new ArrayList<Double>();
 		List<String> rewrite = new ArrayList<String>();
@@ -75,13 +136,11 @@ public class Optimizer {
 			}
 //			System.out.printf("Runtime: %.3f\n", testRuntime(front));
 		}
-		if(Math.abs(realCost.get(bestReal) - realCost.get(bestEsti))/realCost.get(bestReal) <= 0.5){
+		
 			//System.out.println("Best matched.");
-			return true;
-		}
-		return false;
+		//return false;
 //		System.out.println(incident.optiTree.toString());
-/*		for(String str: rewrite){
+		for(String str: rewrite){
 			System.out.println(str);
 		}
 		for(double x: estiCost){
@@ -91,7 +150,9 @@ public class Optimizer {
 		for(double x: realCost){
 			System.out.printf("%.2f,", x);
 		}
-		System.out.println();*/
+		System.out.println();
+		
+		return Math.abs(realCost.get(bestReal) - realCost.get(bestEsti))/realCost.get(bestReal);
 	}
 	
 	//calculated using time complexity

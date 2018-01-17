@@ -16,6 +16,13 @@ public class Incident {
 		ACTI, LPAREN, RPAREN, LBRACKET, RBRACKET, OP, ATTR
 	};
 	
+	public Incident() {
+		incidentExpr = "";
+		tree = null;
+		optiTree = null;
+		occs = null;
+	}
+	
 	public Incident(String query) {
 		if(!checkQueryValidity(query)){
 			System.err.println("Invalid query!");

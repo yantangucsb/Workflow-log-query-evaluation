@@ -21,8 +21,7 @@ public class Main {
 
 	public static void main(String[] args){
 		Log log = new Log();
-		log.loadFile("data/output_07.txt");
-//		log.loadFile("data/output_11.txt");
+		log.loadFile("data/output_09.txt");
 		QueryEngine.queryEngine.log = log;
 //		testRecord(log);
 //		testRecordWithCond(log);
@@ -31,7 +30,7 @@ public class Main {
 //		testOrOp(log);
 //		testParaOp(log);
 		
-		String[] qs1 = generateIncident('*', 3, 50);
+		String[] qs1 = generateIncident('*', 4, 10);
 		for(int i=0; i<qs1.length; i++){
 			System.out.println("\"" + qs1[i] + "\",");
 		}
@@ -61,9 +60,10 @@ public class Main {
 				"ORGANS:INJDETS:PRECONDS|INJDETS",
 				"TREATMEN+TTDETLS+TRANSFER+READMIT",
 				"FLDDETAI.PROTECT|QAISSUE.MAINDATA"};
+		String[] qs7 = {"POSTHOSP+OPRM:FINANCE:TRA:TRA.TRANSFER.INJDETS"};
 		test(qs1, 3);
-//		test(qs, 1);
-//		test(qs, 0);
+//		testRuntime(qs1, 3);
+//		testOptimizerAccuracy(qs1, 3);
 	}
 	
 	public static void testRecordWithCond(Log log, int model){
@@ -171,18 +171,105 @@ public class Main {
 		test(qs, 0);
 	}
 	
+	// Test optimizer effectiveness
 	public static void test(String[] qs, int model){
+		double[] optimizer_time = new double[qs.length];
+		double[] best_time = new double[qs.length];
+		double[] worst_time = new double[qs.length];
+		for(int i=0; i<qs.length; i++){
+			Incident incident = new Incident(qs[i]);
+			if(model <= 0){
+				return;
+			}
+				long opti1 = System.nanoTime();
+				Incident[] res = Optimizer.generateOptimalTree(incident, model);
+				long opti2 = System.nanoTime();
+				opti2 -= opti1;
+				optimizer_time[i] = opti2;
+//				System.out.println(incident.tree.toString());
+//				System.out.println(incident.optiTree);
+//				System.out.println("Opti time (millis) for test case " + i + " : " + opti2);
+			
+			long total1 = 0, total2 = 0;
+			for(int j=0; j<10; j++) {
+				System.gc();
+				long t1 = System.nanoTime();
+				QueryEngine.queryEngine.query(res[1]);
+				long t2 = System.nanoTime();
+				t2 -= t1;
+				total1 += t2;
+			}
+			worst_time[i] = total1/10;
+			
+			for(int j=0; j<10; j++) {
+				System.gc();
+				long t1 = System.nanoTime();
+				QueryEngine.queryEngine.query(res[0]);
+				long t2 = System.nanoTime();
+				t2 -= t1;
+				total2 += t2;
+			}
+				
+			best_time[i] = total2/10;
+			System.out.println("Finish case " + i);
+		}
+		
+		for(int i=0; i<qs.length; i++){
+			System.out.println(optimizer_time[i] + "\t" + best_time[i] + "\t" + worst_time[i]);
+		}
+	}
+	
+	// Test runtime for each type of operator
+	public static void testRuntime(String[] qs, int model){
+		long total_time = 0;
+		for(int i=0; i<qs.length; i++){
+			
+			Incident incident = new Incident(qs[i]);
+			if(model <= 0){
+				return;
+			}
+			long total = 0;
+			for(int j=0; j<10; j++){
+				System.gc();
+				long t1 = System.nanoTime();
+				QueryEngine.queryEngine.query(incident);
+				long t2 = System.nanoTime();
+				total += t2 - t1;
+			}
+			
+			
+			total_time += total/10;
+			
+		}
+		
+		System.out.println("Average time: " + total_time/qs.length);
+	}
+	
+	public static void testOptimizerAccuracy(String[] qs, int model){
 		long time = 0, max = 0, min = Integer.MAX_VALUE;
 		long optiTime = 0, maxOpti = 0, minOpti = Integer.MAX_VALUE;
-		int count = 0;
+		int[] counts = {0, 0, 0, 0, 0, 0, 0};
 		for(int i=0; i<qs.length; i++){
 			Incident incident = new Incident(qs[i]);
 			if(model > 0){
-				long opti1 = System.currentTimeMillis();
-				if(Optimizer.generateOptimalTree(incident, model)){
-					count++;
+				long opti1 = System.nanoTime();
+				double res = Optimizer.generateOptimalTree_performance(incident, model);
+				if(res <= 0.0001){
+					counts[0]++;
+				}else if(res <= 0.01){
+					counts[1]++;
+				}else if(res <= 0.02){
+					counts[2]++;
+				}else if(res <= 0.05){
+					counts[3] ++;
+				}else if(res <= 0.1){
+					counts[4]++;
+				}else if(res <= 0.2){
+					counts[5]++;
+				}else if(res <= 0.5){
+					counts[6]++;
 				}
-				long opti2 = System.currentTimeMillis();
+				long opti2 = System.nanoTime();
 				opti2 -= opti1;
 				optiTime += opti2;
 				maxOpti = Math.max(maxOpti, opti2);
@@ -200,7 +287,12 @@ public class Main {
 			min = Math.min(min, t2);
 			System.out.println("Running time(milis) for test case " + i + " : " + t2);
 		}
-		System.out.println("Correct prediction: " + count);
+		System.out.println("Correct prediction: ");
+		int curcount = 0;
+		for(int x: counts){
+			System.out.println(x+curcount);
+			curcount += x;
+		}
 		System.out.println("Total test cases: " + qs.length);
 		System.out.println("Average runtime: " + time/qs.length);
 //		System.out.println("Max runtime: " + max);

@@ -44,12 +44,21 @@ public class OpNode extends IncidentTreeNode{
 			t1 = new Thread(left);
 			t1.start();
 		}
+		//synchronize for testing runtime
+		try {
+			t1.join();
+//			t2.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if(right != null){
 			t2 = new Thread(right);
 			t2.start();
 		}
 		try {
-			t1.join();
+//			t1.join();
 			t2.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
